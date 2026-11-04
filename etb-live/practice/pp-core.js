@@ -158,6 +158,9 @@
     const S = store.data;
     S.concepts = S.concepts || {};
     const cs = S.concepts[concept.id] = S.concepts[concept.id] || { tier: null, style: {}, counts: {}, mixTurn: {}, act: {} };
+    // Reviews are intentionally closed whenever the concept-check page opens.
+    // The button can still open the saved review during the current session.
+    cs.reviewOpen = false;
     const tiers = [1, 2, 3].filter((t) => concept.activities.some((a) => a.tier === t && PP.renderers[a.type]));
     if (!tiers.includes(cs.tier)) cs.tier = tiers[0];
     let cleanup = null;
