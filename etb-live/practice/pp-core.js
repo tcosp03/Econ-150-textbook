@@ -222,8 +222,9 @@
       h += '<div class="pp-progress"><div class="pp-bar"><span style="width:' + Math.min(100, (done / goal) * 100) + '%"></span></div><div class="pp-tiny pp-muted">' +
         Math.min(done, goal) + " / " + goal + " suggested. " + (done >= goal ? "Move on when you feel ready." : "A guide, not a grade.") + "</div></div>";
       h += '<div id="pp-activity" aria-live="polite"></div>';
-      h += '<div class="pp-review-actions"><button type="button" id="pp-review" aria-expanded="' + (cs.reviewOpen ? "true" : "false") + '">' + (cs.reviewOpen ? "Hide review" : "Review last 10 questions") + '</button></div>';
+      h += '<div class="pp-review-row"><div class="pp-review-actions"><button type="button" id="pp-review" aria-expanded="' + (cs.reviewOpen ? "true" : "false") + '">' + (cs.reviewOpen ? "Hide review" : "Review last 10 questions") + '</button></div>';
       if (cs.reviewOpen) h += reviewHtml(cs.lastReview);
+      h += '</div>';
       h += '</div>';
       rootEl.innerHTML = h;
 
@@ -238,7 +239,8 @@
         const existing = rootEl.querySelector("#pp-review-panel");
         if (cs.reviewOpen && !existing) {
           const activityHost = rootEl.querySelector("#pp-activity");
-          if (activityHost) activityHost.insertAdjacentHTML("beforebegin", reviewHtml(cs.lastReview));
+          const reviewRow = rootEl.querySelector(".pp-review-row");
+          if (reviewRow) reviewRow.insertAdjacentHTML("beforeend", reviewHtml(cs.lastReview));
         } else if (!cs.reviewOpen && existing) existing.remove();
       };
       if (reviewButton) reviewButton.onclick = () => { cs.reviewOpen = !cs.reviewOpen; store.save(); syncReviewPanel(); };
@@ -248,7 +250,12 @@
       const ctx = {
         state: ast,
         save: () => store.save(),
-        count: () => { cs.counts[cs.tier] = (cs.counts[cs.tier] || 0) + 1; store.save(); updateProgress(); },
+        count: () => {
+          const goal = goals[cs.tier] || 10;
+          if ((cs.counts[cs.tier] || 0) >= goal) cs.counts[cs.tier] = 0;
+          cs.counts[cs.tier] = (cs.counts[cs.tier] || 0) + 1;
+          store.save(); updateProgress();
+        },
         roundDone: () => {
           if (mix) { cs.mixTurn[cs.tier] = (cs.mixTurn[cs.tier] || 0) + 1; store.save(); render(); return true; }
           return false;
@@ -273,10 +280,11 @@
             resp: fields.resp || {}, misc: (fields.misc || []).filter(Boolean), extra: fields.extra || undefined
           });
           const setSize = goals[cs.tier] || 10;
-          const prior = cs.lastReview;
+          const prior = cs.reviewBuffer;
           const review = prior && prior.tier === cs.tier && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
           review.items.push({ prompt: reviewPrompt(unit), response: reviewResponse(unit, fields.resp || {}, activity), correctAnswer: reviewCorrect(unit, activity), correct: fields.correct == null ? false : !!fields.correct, why: unit.why || "Review the worked explanation." });
-          cs.lastReview = review;
+          cs.reviewBuffer = review;
+          if (review.items.length >= setSize) cs.lastReview = review;
           cs.reviewOpen = false;
           store.save();
           return ev;
