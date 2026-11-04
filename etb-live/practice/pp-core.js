@@ -233,9 +233,10 @@
       h += '<p class="pp-instruction"><b>' + esc(activity.title) + (/[.?!:]$/.test(activity.title) ? "" : ".") + "</b> " + esc(activity.instructions || DEFAULT_INSTRUCTIONS[activity.type] || "") + "</p>";
       h += '<div class="pp-progress"><div class="pp-bar"><span style="width:' + Math.min(100, (done / goal) * 100) + '%"></span></div><div class="pp-tiny pp-muted">' +
         Math.min(done, goal) + " / " + goal + " suggested. " + (done >= goal ? "Move on when you feel ready." : "A guide, not a grade.") + "</div></div>";
+      h += '<div id="pp-activity" aria-live="polite"></div>';
       h += '<div class="pp-review-row"><div class="pp-review-actions"><button type="button" id="pp-review" aria-expanded="' + (cs.reviewOpen ? "true" : "false") + '">' + (cs.reviewOpen ? "Hide review" : "Review last 10 questions") + '</button></div>';
       if (cs.reviewOpen) h += reviewHtml(cs.lastReview);
-      h += '</div><div id="pp-activity" aria-live="polite"></div></div>';
+      h += '</div></div>';
       rootEl.innerHTML = h;
 
       rootEl.querySelectorAll("[data-tier]").forEach((b) => (b.onclick = () => { cs.tier = Number(b.dataset.tier); store.save(); render(); }));
