@@ -87,3 +87,4 @@
     return '<figure class="pp-figure" role="img" aria-label="' + esc(spec.alt) + '"><div class="pp-fig-grid' + (compact ? " pp-fig-compact" : "") + '" style="--pp-fig-cols:' + cols + '">' + inner + "</div></figure>";
   };
 })(window.PP);
+

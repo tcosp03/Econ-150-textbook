@@ -208,3 +208,4 @@ legend { font-weight: 650; padding: 0 4px; }
 @media (max-width: 520px) { .pp-fig-grid:not(.pp-fig-compact) { grid-template-columns: 1fr; } }
 .pp-fig-compact { max-width: 480px; }
 .pp-fig-cap { text-align: center; font-weight: 700; font-size: .95rem; color: #21313e; margin: 2px 0 -4px; }
+
