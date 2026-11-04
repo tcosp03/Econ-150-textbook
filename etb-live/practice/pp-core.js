@@ -154,7 +154,7 @@
   function mountCheckpoint(rootEl, bank, conceptIndex, store) {
     const concept = bank.concepts.find((c) => Number(c.number) === conceptIndex + 1);
     if (!concept) { rootEl.innerHTML = '<div class="pp-panel">This checkpoint isn’t available.</div>'; return; }
-    const goals = (bank.settings && bank.settings.goals) || { 1: 10, 2: 5, 3: 3 };
+    const goals = (bank.settings && bank.settings.goals) || { 1: 10, 2: 10, 3: 10 };
     const S = store.data;
     S.concepts = S.concepts || {};
     const cs = S.concepts[concept.id] = S.concepts[concept.id] || { tier: null, style: {}, counts: {}, mixTurn: {}, act: {} };
@@ -173,7 +173,16 @@
       if (resp.opt != null && unit.options) return unit.options[resp.opt] || "Unknown choice";
       if (resp.choice != null && unit.options) return unit.options[resp.choice] || "Unknown choice";
       if (resp.label != null && activity.labels) return activity.labels[resp.label] || "Unknown label";
-      if (resp.bin != null && activity.bins) return activity.bins[resp.bin] || "Unknown category";
+      if (resp.bin != null && activity.bins) return "Category: " + (activity.bins[resp.bin] || "Unknown category") + (resp.how ? " (" + resp.how + ")" : "");
+      if (resp.with != null && activity.pairs) {
+        const pair = activity.pairs.find((p) => p.id === resp.with);
+        return pair ? "Matched with: " + pair.right : "Matched with: unknown card";
+      }
+      if (resp.answer != null && activity.rounds) {
+        const answer = unit.answers && unit.answers[resp.answer];
+        return "Grade: " + (resp.grade || "not graded") + (answer ? " — " + answer.text : "");
+      }
+      if (Array.isArray(resp.chosen)) return resp.chosen.length ? resp.chosen.join(" ") : "No tiles selected";
       if (resp.value != null) return String(resp.value) + (resp.unit ? " " + resp.unit : "");
       if (resp.grade != null) return "Grade: " + resp.grade;
       if (resp.text != null) return resp.text;
@@ -184,6 +193,9 @@
       if (unit.options && unit.answer != null) return unit.options[unit.answer];
       if (activity.labels && unit.answer != null) return activity.labels[unit.answer];
       if (activity.bins && unit.bin != null) return activity.bins[unit.bin];
+      if (activity.pairs && unit.right) return "Match with: " + unit.right;
+      if (activity.rounds && unit.answers) return unit.answers.map((a) => (a.grade === "A-" ? "A−" : a.grade) + " — " + a.text).join(" | ");
+      if (Array.isArray(unit.correct)) return unit.correct.join(" ");
       if (unit.answer != null && typeof unit.answer !== "object") return String(unit.answer);
       if (unit.answer && typeof unit.answer === "object" && unit.answer.value != null) return String(unit.answer.value) + (unit.answer.unit ? " " + unit.answer.unit : "");
       return "See the explanation above.";
@@ -221,9 +233,9 @@
       h += '<p class="pp-instruction"><b>' + esc(activity.title) + (/[.?!:]$/.test(activity.title) ? "" : ".") + "</b> " + esc(activity.instructions || DEFAULT_INSTRUCTIONS[activity.type] || "") + "</p>";
       h += '<div class="pp-progress"><div class="pp-bar"><span style="width:' + Math.min(100, (done / goal) * 100) + '%"></span></div><div class="pp-tiny pp-muted">' +
         Math.min(done, goal) + " / " + goal + " suggested. " + (done >= goal ? "Move on when you feel ready." : "A guide, not a grade.") + "</div></div>";
-      h += '<div class="pp-review-actions"><button type="button" id="pp-review">' + (cs.reviewOpen ? "Hide review" : "Review last set") + '</button></div>';
+      h += '<div class="pp-review-row"><div class="pp-review-actions"><button type="button" id="pp-review" aria-expanded="' + (cs.reviewOpen ? "true" : "false") + '">' + (cs.reviewOpen ? "Hide review" : "Review last 10 questions") + '</button></div>';
       if (cs.reviewOpen) h += reviewHtml(cs.lastReview);
-      h += '<div id="pp-activity" aria-live="polite"></div></div>';
+      h += '</div><div id="pp-activity" aria-live="polite"></div></div>';
       rootEl.innerHTML = h;
 
       rootEl.querySelectorAll("[data-tier]").forEach((b) => (b.onclick = () => { cs.tier = Number(b.dataset.tier); store.save(); render(); }));
@@ -237,7 +249,12 @@
       const ctx = {
         state: ast,
         save: () => store.save(),
-        count: () => { cs.counts[cs.tier] = (cs.counts[cs.tier] || 0) + 1; store.save(); updateProgress(); },
+        count: () => {
+          const goal = goals[cs.tier] || 10;
+          if ((cs.counts[cs.tier] || 0) >= goal) cs.counts[cs.tier] = 0;
+          cs.counts[cs.tier] = (cs.counts[cs.tier] || 0) + 1;
+          store.save(); updateProgress();
+        },
         roundDone: () => {
           if (mix) { cs.mixTurn[cs.tier] = (cs.mixTurn[cs.tier] || 0) + 1; store.save(); render(); return true; }
           return false;
@@ -261,11 +278,12 @@
             correct: fields.correct == null ? null : !!fields.correct,
             resp: fields.resp || {}, misc: (fields.misc || []).filter(Boolean), extra: fields.extra || undefined
           });
-          const setSize = activity.round_size || activity.board_size || (activity.deck && activity.deck.problems ? activity.deck.problems.length : 1);
-          const prior = cs.lastReview;
-          const review = prior && prior.activityId === activity.id && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
+          const setSize = goals[cs.tier] || 10;
+          const prior = cs.reviewBuffer;
+          const review = prior && prior.tier === cs.tier && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
           review.items.push({ prompt: reviewPrompt(unit), response: reviewResponse(unit, fields.resp || {}, activity), correctAnswer: reviewCorrect(unit, activity), correct: fields.correct == null ? false : !!fields.correct, why: unit.why || "Review the worked explanation." });
-          cs.lastReview = review;
+          cs.reviewBuffer = review;
+          if (review.items.length >= setSize) cs.lastReview = review;
           cs.reviewOpen = false;
           store.save();
           return ev;
