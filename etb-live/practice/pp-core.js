@@ -165,6 +165,35 @@
 
     function activitiesFor(t) { return concept.activities.filter((a) => a.tier === t && PP.renderers[a.type]); }
 
+    function reviewPrompt(unit) {
+      return unit.prompt || unit.text || unit.term || (unit.left && unit.right ? unit.left + " vs. " + unit.right : "Question");
+    }
+    function reviewResponse(unit, resp, activity) {
+      if (!resp) return "No response recorded";
+      if (resp.opt != null && unit.options) return unit.options[resp.opt] || "Unknown choice";
+      if (resp.choice != null && unit.options) return unit.options[resp.choice] || "Unknown choice";
+      if (resp.label != null && activity.labels) return activity.labels[resp.label] || "Unknown label";
+      if (resp.bin != null && activity.bins) return activity.bins[resp.bin] || "Unknown category";
+      if (resp.value != null) return String(resp.value) + (resp.unit ? " " + resp.unit : "");
+      if (resp.grade != null) return "Grade: " + resp.grade;
+      if (resp.text != null) return resp.text;
+      if (resp.how != null) return String(resp.how);
+      return Object.keys(resp).length ? JSON.stringify(resp) : "No response recorded";
+    }
+    function reviewCorrect(unit, activity) {
+      if (unit.options && unit.answer != null) return unit.options[unit.answer];
+      if (activity.labels && unit.answer != null) return activity.labels[unit.answer];
+      if (activity.bins && unit.bin != null) return activity.bins[unit.bin];
+      if (unit.answer != null && typeof unit.answer !== "object") return String(unit.answer);
+      if (unit.answer && typeof unit.answer === "object" && unit.answer.value != null) return String(unit.answer.value) + (unit.answer.unit ? " " + unit.answer.unit : "");
+      return "See the explanation above.";
+    }
+    function reviewHtml(review) {
+      if (!review || !review.items || !review.items.length) return '<p class="pp-tiny pp-muted">Complete a question set to see its review here.</p>';
+      return '<div class="pp-review" aria-label="Review of the most recent question set"><div class="pp-review-head"><b>Most recent set</b><span class="pp-tiny pp-muted">' + review.items.length + ' question' + (review.items.length === 1 ? '' : 's') + '</span></div>' +
+        review.items.map((r) => '<article class="pp-review-item ' + (r.correct ? 'pp-review-good' : 'pp-review-bad') + '"><div class="pp-review-status">' + (r.correct ? 'Correct' : 'Incorrect') + '</div><div class="pp-review-q">' + esc(r.prompt) + '</div><div class="pp-review-line"><b>Your response:</b> ' + esc(r.response) + '</div>' + (!r.correct ? '<div class="pp-review-line"><b>Best answer:</b> ' + esc(r.correctAnswer) + '</div>' : '') + '<div class="pp-review-why"><b>Why:</b> ' + esc(r.why) + '</div></article>').join('') + '</div>';
+    }
+
     function current() {
       const list = activitiesFor(cs.tier);
       const pick = cs.style[cs.tier] || (list.length > 1 ? "mix" : list[0].id);
@@ -192,12 +221,16 @@
       h += '<p class="pp-instruction"><b>' + esc(activity.title) + (/[.?!:]$/.test(activity.title) ? "" : ".") + "</b> " + esc(activity.instructions || DEFAULT_INSTRUCTIONS[activity.type] || "") + "</p>";
       h += '<div class="pp-progress"><div class="pp-bar"><span style="width:' + Math.min(100, (done / goal) * 100) + '%"></span></div><div class="pp-tiny pp-muted">' +
         Math.min(done, goal) + " / " + goal + " suggested. " + (done >= goal ? "Move on when you feel ready." : "A guide, not a grade.") + "</div></div>";
+      h += '<div class="pp-review-actions"><button type="button" id="pp-review">' + (cs.reviewOpen ? "Hide review" : "Review last set") + '</button></div>';
+      if (cs.reviewOpen) h += reviewHtml(cs.lastReview);
       h += '<div id="pp-activity" aria-live="polite"></div></div>';
       rootEl.innerHTML = h;
 
       rootEl.querySelectorAll("[data-tier]").forEach((b) => (b.onclick = () => { cs.tier = Number(b.dataset.tier); store.save(); render(); }));
       const sel = rootEl.querySelector("#pp-style");
       if (sel) sel.onchange = () => { cs.style[cs.tier] = sel.value; store.save(); render(); };
+      const reviewButton = rootEl.querySelector("#pp-review");
+      if (reviewButton) reviewButton.onclick = () => { cs.reviewOpen = !cs.reviewOpen; store.save(); render(); };
 
       const host = rootEl.querySelector("#pp-activity");
       const ast = cs.act[activity.id] = cs.act[activity.id] || {};
@@ -221,13 +254,21 @@
           const n = S.attempts[unit.id] = (S.attempts[unit.id] || 0) + 1;
           store.save();
           const key = fields.key || unit.id;
-          return PP.recordEvent({
+          const ev = PP.recordEvent({
             concept: concept.number, act: activity.id, type: activity.type, tier: activity.tier, mode: mix ? "mix" : "chosen",
             unit: unit.id, unit_v: unit._v || null, attempt: n,
             ms: marks[key] != null ? Math.round(performance.now() - marks[key]) : null,
             correct: fields.correct == null ? null : !!fields.correct,
             resp: fields.resp || {}, misc: (fields.misc || []).filter(Boolean), extra: fields.extra || undefined
           });
+          const setSize = activity.round_size || activity.board_size || (activity.deck && activity.deck.problems ? activity.deck.problems.length : 1);
+          const prior = cs.lastReview;
+          const review = prior && prior.activityId === activity.id && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
+          review.items.push({ prompt: reviewPrompt(unit), response: reviewResponse(unit, fields.resp || {}, activity), correctAnswer: reviewCorrect(unit, activity), correct: fields.correct == null ? false : !!fields.correct, why: unit.why || "Review the worked explanation." });
+          cs.lastReview = review;
+          cs.reviewOpen = false;
+          store.save();
+          return ev;
         }
       };
       cleanup = PP.renderers[activity.type].render(host, activity, ctx) || null;
