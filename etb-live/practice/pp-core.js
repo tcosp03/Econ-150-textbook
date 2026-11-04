@@ -189,8 +189,8 @@
       return "See the explanation above.";
     }
     function reviewHtml(review) {
-      if (!review || !review.items || !review.items.length) return '<div id="pp-review-panel" class="pp-review" aria-label="Review of the most recent question set"><p class="pp-tiny pp-muted">Complete a question set to see its review here.</p></div>';
-      return '<div id="pp-review-panel" class="pp-review" aria-label="Review of the current 10-question set"><div class="pp-review-head"><b>Current 10-question set</b><span class="pp-tiny pp-muted">' + review.items.length + ' submitted</span></div>' +
+      if (!review || !review.items || !review.items.length) return '<p class="pp-tiny pp-muted">Complete a question set to see its review here.</p>';
+      return '<div class="pp-review" aria-label="Review of the most recent question set"><div class="pp-review-head"><b>Most recent set</b><span class="pp-tiny pp-muted">' + review.items.length + ' question' + (review.items.length === 1 ? '' : 's') + '</span></div>' +
         review.items.map((r) => '<article class="pp-review-item ' + (r.correct ? 'pp-review-good' : 'pp-review-bad') + '"><div class="pp-review-status">' + (r.correct ? 'Correct' : 'Incorrect') + '</div><div class="pp-review-q">' + esc(r.prompt) + '</div><div class="pp-review-line"><b>Your response:</b> ' + esc(r.response) + '</div>' + (!r.correct ? '<div class="pp-review-line"><b>Best answer:</b> ' + esc(r.correctAnswer) + '</div>' : '') + '<div class="pp-review-why"><b>Why:</b> ' + esc(r.why) + '</div></article>').join('') + '</div>';
     }
 
@@ -221,41 +221,23 @@
       h += '<p class="pp-instruction"><b>' + esc(activity.title) + (/[.?!:]$/.test(activity.title) ? "" : ".") + "</b> " + esc(activity.instructions || DEFAULT_INSTRUCTIONS[activity.type] || "") + "</p>";
       h += '<div class="pp-progress"><div class="pp-bar"><span style="width:' + Math.min(100, (done / goal) * 100) + '%"></span></div><div class="pp-tiny pp-muted">' +
         Math.min(done, goal) + " / " + goal + " suggested. " + (done >= goal ? "Move on when you feel ready." : "A guide, not a grade.") + "</div></div>";
-      h += '<div id="pp-activity" aria-live="polite"></div>';
-      h += '<div class="pp-review-row"><div class="pp-review-actions"><button type="button" id="pp-review" aria-expanded="' + (cs.reviewOpen ? "true" : "false") + '">' + (cs.reviewOpen ? "Hide review" : "Review last 10 questions") + '</button></div>';
+      h += '<div class="pp-review-actions"><button type="button" id="pp-review">' + (cs.reviewOpen ? "Hide review" : "Review last set") + '</button></div>';
       if (cs.reviewOpen) h += reviewHtml(cs.lastReview);
-      h += '</div>';
-      h += '</div>';
+      h += '<div id="pp-activity" aria-live="polite"></div></div>';
       rootEl.innerHTML = h;
 
       rootEl.querySelectorAll("[data-tier]").forEach((b) => (b.onclick = () => { cs.tier = Number(b.dataset.tier); store.save(); render(); }));
       const sel = rootEl.querySelector("#pp-style");
       if (sel) sel.onchange = () => { cs.style[cs.tier] = sel.value; store.save(); render(); };
       const reviewButton = rootEl.querySelector("#pp-review");
-      const syncReviewPanel = () => {
-        if (!reviewButton) return;
-        reviewButton.textContent = cs.reviewOpen ? "Hide review" : "Review last 10 questions";
-        reviewButton.setAttribute("aria-expanded", cs.reviewOpen ? "true" : "false");
-        const existing = rootEl.querySelector("#pp-review-panel");
-        if (cs.reviewOpen && !existing) {
-          const activityHost = rootEl.querySelector("#pp-activity");
-          const reviewRow = rootEl.querySelector(".pp-review-row");
-          if (reviewRow) reviewRow.insertAdjacentHTML("beforeend", reviewHtml(cs.lastReview));
-        } else if (!cs.reviewOpen && existing) existing.remove();
-      };
-      if (reviewButton) reviewButton.onclick = () => { cs.reviewOpen = !cs.reviewOpen; store.save(); syncReviewPanel(); };
+      if (reviewButton) reviewButton.onclick = () => { cs.reviewOpen = !cs.reviewOpen; store.save(); render(); };
 
       const host = rootEl.querySelector("#pp-activity");
       const ast = cs.act[activity.id] = cs.act[activity.id] || {};
       const ctx = {
         state: ast,
         save: () => store.save(),
-        count: () => {
-          const goal = goals[cs.tier] || 10;
-          if ((cs.counts[cs.tier] || 0) >= goal) cs.counts[cs.tier] = 0;
-          cs.counts[cs.tier] = (cs.counts[cs.tier] || 0) + 1;
-          store.save(); updateProgress();
-        },
+        count: () => { cs.counts[cs.tier] = (cs.counts[cs.tier] || 0) + 1; store.save(); updateProgress(); },
         roundDone: () => {
           if (mix) { cs.mixTurn[cs.tier] = (cs.mixTurn[cs.tier] || 0) + 1; store.save(); render(); return true; }
           return false;
@@ -279,12 +261,11 @@
             correct: fields.correct == null ? null : !!fields.correct,
             resp: fields.resp || {}, misc: (fields.misc || []).filter(Boolean), extra: fields.extra || undefined
           });
-          const setSize = goals[cs.tier] || 10;
-          const prior = cs.reviewBuffer;
-          const review = prior && prior.tier === cs.tier && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
+          const setSize = activity.round_size || activity.board_size || (activity.deck && activity.deck.problems ? activity.deck.problems.length : 1);
+          const prior = cs.lastReview;
+          const review = prior && prior.activityId === activity.id && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
           review.items.push({ prompt: reviewPrompt(unit), response: reviewResponse(unit, fields.resp || {}, activity), correctAnswer: reviewCorrect(unit, activity), correct: fields.correct == null ? false : !!fields.correct, why: unit.why || "Review the worked explanation." });
-          cs.reviewBuffer = review;
-          if (review.items.length >= setSize) cs.lastReview = review;
+          cs.lastReview = review;
           cs.reviewOpen = false;
           store.save();
           return ev;
