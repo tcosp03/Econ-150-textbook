@@ -176,7 +176,7 @@
       if (resp.bin != null && activity.bins) return "Category: " + (activity.bins[resp.bin] || "Unknown category") + (resp.how ? " (" + resp.how + ")" : "");
       if (resp.with != null && activity.pairs) {
         const pair = activity.pairs.find((p) => p.id === resp.with);
-        return pair ? "Matched with: " + pair.right : "Matched with: unknown card";
+        return pair ? "Matched pair: " + (unit.left || "Selected card") + " → " + pair.right : "Matched pair: unknown card";
       }
       if (resp.answer != null && activity.rounds) {
         const answer = unit.answers && unit.answers[resp.answer];
@@ -193,7 +193,7 @@
       if (unit.options && unit.answer != null) return unit.options[unit.answer];
       if (activity.labels && unit.answer != null) return activity.labels[unit.answer];
       if (activity.bins && unit.bin != null) return activity.bins[unit.bin];
-      if (activity.pairs && unit.right) return "Match with: " + unit.right;
+      if (activity.pairs && unit.right) return "Correct pair: " + unit.left + " → " + unit.right;
       if (activity.rounds && unit.answers) return unit.answers.map((a) => (a.grade === "A-" ? "A−" : a.grade) + " — " + a.text).join(" | ");
       if (Array.isArray(unit.correct)) return unit.correct.join(" ");
       if (unit.answer != null && typeof unit.answer !== "object") return String(unit.answer);
