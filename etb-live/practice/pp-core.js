@@ -154,10 +154,19 @@
   function mountCheckpoint(rootEl, bank, conceptIndex, store) {
     const concept = bank.concepts.find((c) => Number(c.number) === conceptIndex + 1);
     if (!concept) { rootEl.innerHTML = '<div class="pp-panel">This checkpoint isn’t available.</div>'; return; }
-    const goals = (bank.settings && bank.settings.goals) || { 1: 10, 2: 5, 3: 3 };
+    const goals = (bank.settings && bank.settings.goals) || { 1: 10, 2: 10, 3: 10 };
     const S = store.data;
     S.concepts = S.concepts || {};
     const cs = S.concepts[concept.id] = S.concepts[concept.id] || { tier: null, style: {}, counts: {}, mixTurn: {}, act: {} };
+    // Discard review records created by older formatters that stored indexes or raw objects.
+    if (cs.reviewVersion !== 5) {
+      cs.reviewVersion = 5;
+      cs.reviews = {};
+    }
+    cs.reviews = cs.reviews || {};
+    // Reviews are intentionally closed whenever the concept-check page opens.
+    // The button can still open the saved review during the current session.
+    cs.reviewOpen = false;
     const tiers = [1, 2, 3].filter((t) => concept.activities.some((a) => a.tier === t && PP.renderers[a.type]));
     if (!tiers.includes(cs.tier)) cs.tier = tiers[0];
     let cleanup = null;
@@ -165,10 +174,85 @@
 
     function activitiesFor(t) { return concept.activities.filter((a) => a.tier === t && PP.renderers[a.type]); }
 
+    function reviewState() {
+      const key = String(cs.tier);
+      cs.reviews[key] = cs.reviews[key] || { buffer: null, last: null };
+      return cs.reviews[key];
+    }
+    function reviewGoal() { return goals[cs.tier] || 10; }
+    function syncReviewButton() {
+      const b = rootEl.querySelector("#pp-review");
+      if (!b) return;
+      const goal = reviewGoal(), state = reviewState();
+      const ready = !!(state.last && state.last.items && state.last.items.length === goal);
+      b.disabled = !ready;
+      b.textContent = ready && cs.reviewOpen ? "Hide review" : "Review last " + goal + " questions";
+    }
+    function reviewPrompt(unit) {
+      return unit.prompt || unit.text || unit.term || (unit.left && unit.right ? unit.left + " vs. " + unit.right : "Question");
+    }
+    function reviewResponse(unit, resp, activity) {
+      if (!resp) return "No response recorded";
+      if (resp.opt != null && unit.options) return unit.options[resp.opt] || "Unknown choice";
+      if (resp.choice != null) {
+        if (unit.options) return unit.options[resp.choice] || "Unknown choice";
+        if (unit.left != null && unit.right != null) return (resp.choice === 0 ? "A: " + unit.left : "B: " + unit.right);
+      }
+      if (resp.label != null && activity.labels) return activity.labels[resp.label] || "Unknown label";
+      if (resp.bin != null && activity.bins) return "Category: " + (activity.bins[resp.bin] || "Unknown category") + (resp.how ? " (" + resp.how + ")" : "");
+      if (resp.with != null && activity.pairs) {
+        const pair = activity.pairs.find((p) => p.id === resp.with);
+        return pair ? "Matched pair: " + (unit.left || "Selected card") + " → " + pair.right : "Matched pair: unknown card";
+      }
+      if (resp.answer != null && activity.rounds) {
+        const answer = unit.answers && unit.answers[resp.answer];
+        return "Grade: " + (resp.grade || "not graded") + (answer ? " — " + answer.text : "");
+      }
+      if (Array.isArray(resp.chosen)) return resp.chosen.length ? resp.chosen.join(" ") : "No tiles selected";
+      if (resp.value != null) return String(resp.value) + (resp.unit ? " " + resp.unit : "");
+      if (resp.grade != null) return "Grade: " + resp.grade;
+      if (resp.text != null) return resp.text;
+      if (resp.how != null) return String(resp.how);
+      return Object.keys(resp).length ? JSON.stringify(resp) : "No response recorded";
+    }
+    function reviewCorrect(unit, activity, resp) {
+      if (unit.options && unit.answer != null) return unit.options[unit.answer];
+      if (activity.labels && unit.answer != null) return activity.labels[unit.answer];
+      if (activity.bins && unit.bin != null) return activity.bins[unit.bin];
+      if (activity.pairs && unit.right) return "Correct pair: " + unit.left + " → " + unit.right;
+      if (activity.rounds && unit.answers) {
+        const a = resp && resp.answer != null ? unit.answers[resp.answer] : null;
+        return a ? ((a.grade === "A-" ? "A−" : a.grade) + " — " + a.text) : "See the grading explanation above.";
+      }
+      if (Array.isArray(unit.correct)) return unit.correct.join(" ");
+      if (unit.answer != null && typeof unit.answer !== "object") return String(unit.answer);
+      if (unit.answer && typeof unit.answer === "object" && unit.answer.value != null) return String(unit.answer.value) + (unit.answer.unit ? " " + unit.answer.unit : "");
+      return "See the explanation above.";
+    }
+    function reviewHtml(review) {
+      if (!review || !review.items || !review.items.length) return '<p class="pp-tiny pp-muted">Complete a question set to see its review here.</p>';
+      return '<div id="pp-review-panel" class="pp-review" aria-label="Review of the most recent question set"><div class="pp-review-head"><b>Most recent set</b><span class="pp-tiny pp-muted">' + review.items.length + ' questions</span></div><div class="pp-review-list">' +
+        review.items.map((r) => '<details class="pp-review-item ' + (r.correct ? 'pp-review-good' : 'pp-review-bad') + '"><summary><span class="pp-review-mark">' + (r.correct ? '✓' : '×') + '</span><span class="pp-review-summary-text"><span class="pp-review-title">' + esc(r.title || 'Practice question') + '</span><span class="pp-review-summary-link">See the question and why</span></span></summary><div class="pp-review-body"><div class="pp-review-prompt">' + esc(r.prompt) + '</div><div><b>Your response:</b> ' + esc(r.response) + '</div>' + (!r.correct ? '<div><b>Best answer:</b> ' + esc(r.correctAnswer) + '</div>' : '') + '<div class="pp-review-why"><b>Why:</b> ' + esc(r.why) + '</div></div></details>').join('') +
+        '</div></div>';
+    }
     function current() {
       const list = activitiesFor(cs.tier);
       const pick = cs.style[cs.tier] || (list.length > 1 ? "mix" : list[0].id);
-      if (pick === "mix") return { mix: true, activity: list[(cs.mixTurn[cs.tier] || 0) % list.length], list };
+      if (pick === "mix") {
+        cs.mixChoice = cs.mixChoice || {};
+        cs.mixLast = cs.mixLast || {};
+        const key = String(cs.tier);
+        const valid = list.map((a) => a.id);
+        let chosen = cs.mixChoice[key];
+        if (!valid.includes(chosen)) {
+          const candidates = list.filter((a) => a.id !== cs.mixLast[key]);
+          const pool = candidates.length ? candidates : list;
+          chosen = pool[Math.floor(Math.random() * pool.length)].id;
+          cs.mixChoice[key] = chosen;
+          store.save();
+        }
+        return { mix: true, activity: list.find((a) => a.id === chosen) || list[0], list };
+      }
       return { mix: false, activity: list.find((a) => a.id === pick) || list[0], list };
     }
 
@@ -192,21 +276,53 @@
       h += '<p class="pp-instruction"><b>' + esc(activity.title) + (/[.?!:]$/.test(activity.title) ? "" : ".") + "</b> " + esc(activity.instructions || DEFAULT_INSTRUCTIONS[activity.type] || "") + "</p>";
       h += '<div class="pp-progress"><div class="pp-bar"><span style="width:' + Math.min(100, (done / goal) * 100) + '%"></span></div><div class="pp-tiny pp-muted">' +
         Math.min(done, goal) + " / " + goal + " suggested. " + (done >= goal ? "Move on when you feel ready." : "A guide, not a grade.") + "</div></div>";
-      h += '<div id="pp-activity" aria-live="polite"></div></div>';
+      const reviewStateNow = reviewState(), reviewGoalNow = reviewGoal(), reviewReadyNow = !!(reviewStateNow.last && reviewStateNow.last.items && reviewStateNow.last.items.length === reviewGoalNow);
+      h += '<div id="pp-activity" aria-live="polite"></div>';
+      h += '<div class="pp-review-row"><div class="pp-review-actions"><button type="button" id="pp-review"' + (reviewReadyNow ? '' : ' disabled') + ' aria-expanded="' + (cs.reviewOpen ? "true" : "false") + '">' + (cs.reviewOpen ? "Hide review" : "Review last " + reviewGoalNow + " questions") + '</button></div>';
+      if (cs.reviewOpen && reviewReadyNow) h += reviewHtml(reviewStateNow.last);
+      h += '</div></div>';
       rootEl.innerHTML = h;
 
       rootEl.querySelectorAll("[data-tier]").forEach((b) => (b.onclick = () => { cs.tier = Number(b.dataset.tier); store.save(); render(); }));
       const sel = rootEl.querySelector("#pp-style");
       if (sel) sel.onchange = () => { cs.style[cs.tier] = sel.value; store.save(); render(); };
+      const reviewButton = rootEl.querySelector("#pp-review");
+      if (reviewButton) reviewButton.onclick = () => {
+        cs.reviewOpen = !cs.reviewOpen;
+        store.save();
+        syncReviewButton();
+        reviewButton.setAttribute("aria-expanded", cs.reviewOpen ? "true" : "false");
+        const row = rootEl.querySelector(".pp-review-row");
+        const existing = rootEl.querySelector("#pp-review-panel");
+        const stateNow = reviewState(), readyNow = !!(stateNow.last && stateNow.last.items && stateNow.last.items.length === reviewGoal());
+        if (cs.reviewOpen && readyNow && !existing && row) {
+          row.insertAdjacentHTML("beforeend", reviewHtml(stateNow.last));
+        } else if (!cs.reviewOpen && existing) {
+          existing.remove();
+        }
+        PP.resized && PP.resized();
+      };
 
       const host = rootEl.querySelector("#pp-activity");
       const ast = cs.act[activity.id] = cs.act[activity.id] || {};
       const ctx = {
         state: ast,
         save: () => store.save(),
-        count: () => { cs.counts[cs.tier] = (cs.counts[cs.tier] || 0) + 1; store.save(); updateProgress(); },
+        count: () => {
+          cs.counts[cs.tier] = (reviewState().buffer && reviewState().buffer.items ? reviewState().buffer.items.length : 0);
+          store.save(); updateProgress();
+        },
         roundDone: () => {
-          if (mix) { cs.mixTurn[cs.tier] = (cs.mixTurn[cs.tier] || 0) + 1; store.save(); render(); return true; }
+          if (mix) {
+            cs.mixLast = cs.mixLast || {};
+            cs.mixChoice = cs.mixChoice || {};
+            cs.mixLast[String(cs.tier)] = activity.id;
+            delete cs.mixChoice[String(cs.tier)];
+            cs.mixTurn[cs.tier] = (cs.mixTurn[cs.tier] || 0) + 1;
+            store.save();
+            render();
+            return true;
+          }
           return false;
         },
         rerender: () => render(),
@@ -221,13 +337,25 @@
           const n = S.attempts[unit.id] = (S.attempts[unit.id] || 0) + 1;
           store.save();
           const key = fields.key || unit.id;
-          return PP.recordEvent({
+          const ev = PP.recordEvent({
             concept: concept.number, act: activity.id, type: activity.type, tier: activity.tier, mode: mix ? "mix" : "chosen",
             unit: unit.id, unit_v: unit._v || null, attempt: n,
             ms: marks[key] != null ? Math.round(performance.now() - marks[key]) : null,
             correct: fields.correct == null ? null : !!fields.correct,
             resp: fields.resp || {}, misc: (fields.misc || []).filter(Boolean), extra: fields.extra || undefined
           });
+          const setSize = reviewGoal();
+          const state = reviewState();
+          const prior = state.buffer;
+          const review = prior && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
+          review.items.push({ title: activity.title || activity.type, prompt: reviewPrompt(unit), response: reviewResponse(unit, fields.resp || {}, activity), correctAnswer: reviewCorrect(unit, activity, fields.resp || {}), correct: fields.correct == null ? false : !!fields.correct, why: unit.why || "Review the worked explanation." });
+          if (review.items.length >= setSize) { state.last = review; state.buffer = { activityId: activity.id, tier: cs.tier, items: [] }; }
+          else state.buffer = review;
+          cs.counts[cs.tier] = state.buffer.items.length;
+          cs.reviewOpen = false;
+          store.save();
+          syncReviewButton();
+          return ev;
         }
       };
       cleanup = PP.renderers[activity.type].render(host, activity, ctx) || null;
@@ -235,7 +363,7 @@
     }
 
     function updateProgress() {
-      const goal = goals[cs.tier] || 5, done = cs.counts[cs.tier] || 0;
+      const goal = reviewGoal(), done = reviewState().buffer && reviewState().buffer.items ? reviewState().buffer.items.length : 0;
       const bar = rootEl.querySelector(".pp-progress .pp-bar span");
       const txt = rootEl.querySelector(".pp-progress .pp-tiny");
       if (bar) bar.style.width = Math.min(100, (done / goal) * 100) + "%";

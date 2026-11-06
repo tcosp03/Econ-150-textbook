@@ -74,7 +74,7 @@
           h += '<div class="pp-feedback' + (allRight ? "" : " pp-bad") + '" role="status"><b>' + right + " of " + st.round.length + " in the best category.</b></div>";
         }
         h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-go"' + (!st.checked && placed() < st.round.length ? " disabled" : "") + ">" +
-          (st.checked ? (allRight ? "Next board" : "Continue to next board") : "Check all " + st.round.length) + "</button></div>";
+          (ctx.mix ? "Check Question" : (st.checked ? (allRight ? "Next board" : "Continue to next board") : "Check all " + st.round.length)) + "</button></div>";
         host.innerHTML = h;
         wire();
         ctx.resized();

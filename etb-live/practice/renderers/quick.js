@@ -66,7 +66,7 @@
           const ok = st.last === it.answer;
           h += '<div class="pp-feedback' + (ok ? "" : " pp-bad") + '" role="status"><b>' + (ok ? "Correct." : "Not quite.") + "</b> " + esc(it.why) + "</div>";
           // The Enter hint only for students already on a keyboard; on a phone it's noise.
-          if (!ok) h += '<div class="pp-actions" style="align-items:center"><button type="button" class="pp-primary" id="pp-next">Next</button>' +
+          if (!ok) h += '<div class="pp-actions" style="align-items:center"><button type="button" class="pp-primary" id="pp-next">' + (ctx.mix ? "Check Question" : "Next") + '</button>' +
             (byKey ? '<span class="pp-tiny pp-muted">or press Enter</span>' : "") + "</div>";
         } else h += '<p class="pp-tiny pp-muted">' + (four ? "Use an arrow key or tap a choice." : "Use the keys or tap an answer.") + "</p>";
         host.innerHTML = h;
@@ -99,7 +99,7 @@
           return '<div class="pp-result pp-no"><b>' + esc(it.prompt) + "</b> → " + esc(activity.labels[it.answer]) + ". " + esc(it.why) + "</div>";
         }).join("");
         h += '<p class="pp-tiny pp-muted">Quick rounds build fast, accurate recognition. Pair them with the calculation, sorting, and applied practice for deeper understanding.</p>';
-        h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-again">New round</button></div>';
+        h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-again">' + (ctx.mix ? "Check Question" : "New round") + '</button></div>';
         host.innerHTML = h;
         host.querySelector("#pp-again").onclick = () => { newRound(); if (!ctx.roundDone()) draw(); };
         ctx.resized();

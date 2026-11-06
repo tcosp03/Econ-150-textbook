@@ -44,7 +44,7 @@
         }
         const n = Object.keys(st.picks).length;
         h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-go"' + (!st.checked && n < r.answers.length ? " disabled" : "") + ">" +
-          (st.checked ? "Grade another group" : "Check all three grades") + "</button></div>";
+          (ctx.mix ? "Check Question" : (st.checked ? "Grade another group" : "Check all three grades")) + "</button></div>";
         host.innerHTML = h;
         host.querySelectorAll("[data-g]").forEach((b) => (b.onclick = () => { st.picks[b.dataset.a] = b.dataset.g; ctx.save(); draw(); }));
         host.querySelector("#pp-go").onclick = () => {

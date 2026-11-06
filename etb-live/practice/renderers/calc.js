@@ -104,10 +104,10 @@
         const checked = st.rows.every((k) => st.results[k]);
         const allOk = st.rows.every((k) => st.results[k] && st.results[k].ok);
         h += '<div class="pp-actions">';
-        if (st.stage > 0 && !allOk) h += '<button type="button" class="pp-primary" id="pp-all">' + (checked ? "Recheck" : "Check all") + "</button>";
+        if (st.stage > 0 && !allOk) h += '<button type="button" class="pp-primary" id="pp-all">' + (ctx.mix ? "Check Question" : (checked ? "Recheck" : "Check all")) + "</button>";
         if (checked) {
           const last = st.stage === prog.length - 1;
-          h += '<button type="button" class="' + (allOk ? "pp-primary" : "") + '" id="pp-next">' + (last ? "New set of " + prog[st.stage] : "Continue to " + prog[st.stage + 1] + " problems") + "</button>";
+          h += '<button type="button" class="' + (allOk ? "pp-primary" : "") + '" id="pp-next">' + (ctx.mix ? "Check Question" : (last ? "New set of " + prog[st.stage] : "Continue to " + prog[st.stage + 1] + " problems")) + "</button>";
         }
         h += "</div>";
         host.innerHTML = h;

@@ -57,7 +57,7 @@
             (specific ? "<p>" + esc(specific) + "</p>" : "") + "<p>" + esc(it.why) + "</p></div>";
         }
         h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-go"' + (!st.checked && st.picked == null ? " disabled" : "") + ">" +
-          (st.checked ? "Next question" : "Check answer") + "</button></div>";
+          (ctx.mix ? "Check Question" : (st.checked ? "Next question" : "Check answer")) + "</button></div>";
         host.innerHTML = h;
         host.querySelectorAll("[data-opt]").forEach((b) => (b.onclick = () => { st.picked = Number(b.dataset.opt); ctx.save(); draw(); }));
         host.querySelector("#pp-go").onclick = () => {

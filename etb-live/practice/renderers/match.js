@@ -41,7 +41,7 @@
         }).join("") + "</div>";
         h += '<p class="ppm-status" role="status">' + (finished ? "All pairs matched." : busy ? (picked.length === 2 && tiles.find((x) => x.id === picked[0]).pair === tiles.find((x) => x.id === picked[1]).pair ? "A match!" : "Not a pair.") : picked.length ? "Choose its match." : "Find all " + size + " pairs at your own pace.") + "</p>";
         if (finished) {
-          h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-again">New board</button>' +
+          h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-again">' + (ctx.mix ? "Check Question" : "New board") + '</button>' +
             '<button type="button" id="ppm-review-btn" aria-expanded="' + reviewing + '" aria-controls="ppm-review">Review pairs</button></div>';
           // One row per pair, numbered in the order matched, term beside its match
           // (stacked on phones). The ol numbers it for screen readers; "matches" joins the two.
