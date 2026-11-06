@@ -217,7 +217,7 @@
     }
     function reviewHtml(review) {
       if (!review || !review.items || !review.items.length) return '<p class="pp-tiny pp-muted">Complete a question set to see its review here.</p>';
-      return '<div class="pp-review" aria-label="Review of the most recent question set"><div class="pp-review-head"><b>Most recent set</b><span class="pp-tiny pp-muted">' + review.items.length + ' question' + (review.items.length === 1 ? '' : 's') + '</span></div>' +
+      return '<div id="pp-review-panel" class="pp-review" aria-label="Review of the most recent question set"><div class="pp-review-head"><b>Most recent set</b><span class="pp-tiny pp-muted">' + review.items.length + ' question' + (review.items.length === 1 ? '' : 's') + '</span></div>' +
         review.items.map((r) => '<article class="pp-review-item ' + (r.correct ? 'pp-review-good' : 'pp-review-bad') + '"><div class="pp-review-status">' + (r.correct ? 'Correct' : 'Incorrect') + '</div><div class="pp-review-q">' + esc(r.prompt) + '</div><div class="pp-review-line"><b>Your response:</b> ' + esc(r.response) + '</div>' + (!r.correct ? '<div class="pp-review-line"><b>Best answer:</b> ' + esc(r.correctAnswer) + '</div>' : '') + '<div class="pp-review-why"><b>Why:</b> ' + esc(r.why) + '</div></article>').join('') + '</div>';
     }
 
@@ -250,7 +250,7 @@
         Math.min(done, goal) + " / " + goal + " suggested. " + (done >= goal ? "Move on when you feel ready." : "A guide, not a grade.") + "</div></div>";
       h += '<div id="pp-activity" aria-live="polite"></div>';
       h += '<div class="pp-review-row"><div class="pp-review-actions"><button type="button" id="pp-review" aria-expanded="' + (cs.reviewOpen ? "true" : "false") + '">' + (cs.reviewOpen ? "Hide review" : "Review last 10 questions") + '</button></div>';
-      if (cs.reviewOpen) h += reviewHtml(cs.lastReview);
+      if (cs.reviewOpen) h += reviewHtml(cs.lastReview || cs.reviewBuffer);
       h += '</div></div>';
       rootEl.innerHTML = h;
 
@@ -258,7 +258,20 @@
       const sel = rootEl.querySelector("#pp-style");
       if (sel) sel.onchange = () => { cs.style[cs.tier] = sel.value; store.save(); render(); };
       const reviewButton = rootEl.querySelector("#pp-review");
-      if (reviewButton) reviewButton.onclick = () => { cs.reviewOpen = !cs.reviewOpen; store.save(); render(); };
+      if (reviewButton) reviewButton.onclick = () => {
+        cs.reviewOpen = !cs.reviewOpen;
+        store.save();
+        reviewButton.textContent = cs.reviewOpen ? "Hide review" : "Review last 10 questions";
+        reviewButton.setAttribute("aria-expanded", cs.reviewOpen ? "true" : "false");
+        const row = rootEl.querySelector(".pp-review-row");
+        const existing = rootEl.querySelector("#pp-review-panel");
+        if (cs.reviewOpen && !existing && row) {
+          row.insertAdjacentHTML("beforeend", reviewHtml(cs.lastReview || cs.reviewBuffer));
+        } else if (!cs.reviewOpen && existing) {
+          existing.remove();
+        }
+        PP.resized && PP.resized();
+      };
 
       const host = rootEl.querySelector("#pp-activity");
       const ast = cs.act[activity.id] = cs.act[activity.id] || {};
