@@ -226,3 +226,20 @@ legend { font-weight: 650; padding: 0 4px; }
 .pp-fig-compact { max-width: 480px; }
 .pp-fig-cap { text-align: center; font-weight: 700; font-size: .95rem; color: #21313e; margin: 2px 0 -4px; }
 
+
+/* Compact expandable review cards matching the Chapter 1 review format */
+.pp-review-list{display:grid;gap:8px;margin:0 0 4px}
+details.pp-review-item{display:block;border:1px solid var(--pp-line);border-left:4px solid var(--pp-good);border-radius:7px;background:#f3f7f8;overflow:hidden;padding:0}
+details.pp-review-item.pp-review-bad{border-left-color:var(--pp-bad)}
+details.pp-review-item>summary{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;cursor:pointer;list-style:none}
+details.pp-review-item>summary::-webkit-details-marker{display:none}
+details.pp-review-item>summary::marker{content:"";display:none}
+.pp-review-mark{font-size:18px;line-height:1.15;width:16px;flex:0 0 16px;color:var(--pp-good)}
+.pp-review-bad .pp-review-mark{color:var(--pp-bad)}
+.pp-review-summary-text{display:block;min-width:0}
+.pp-review-title{display:block;font-size:14px;line-height:1.25;font-weight:600;color:#173b5b;margin:0 0 3px}
+.pp-review-summary-link{display:block;font-size:12px;line-height:1.25;color:var(--pp-accent)}
+.pp-review-body{border-top:1px solid var(--pp-line);padding:10px 11px 11px;font-size:13px;line-height:1.45;color:#173b5b}
+.pp-review-body .pp-review-prompt{font-size:14px;font-weight:650;margin:0 0 7px}
+.pp-review-body>div{margin:3px 0}
+.pp-review-why{margin-top:7px;color:var(--pp-muted)}

@@ -159,7 +159,7 @@
     S.concepts = S.concepts || {};
     const cs = S.concepts[concept.id] = S.concepts[concept.id] || { tier: null, style: {}, counts: {}, mixTurn: {}, act: {} };
     // Discard review records created by older formatters that stored indexes or raw objects.
-    if (cs.reviewVersion !== 3) {
+    if (cs.reviewVersion !== 4) {
       cs.reviewVersion = 3;
       cs.reviewBuffer = null;
       cs.lastReview = null;
@@ -217,10 +217,10 @@
     }
     function reviewHtml(review) {
       if (!review || !review.items || !review.items.length) return '<p class="pp-tiny pp-muted">Complete a question set to see its review here.</p>';
-      return '<div id="pp-review-panel" class="pp-review" aria-label="Review of the most recent question set"><div class="pp-review-head"><b>Most recent set</b><span class="pp-tiny pp-muted">' + review.items.length + ' question' + (review.items.length === 1 ? '' : 's') + '</span></div>' +
-        review.items.map((r) => '<article class="pp-review-item ' + (r.correct ? 'pp-review-good' : 'pp-review-bad') + '"><div class="pp-review-status">' + (r.correct ? 'Correct' : 'Incorrect') + '</div><div class="pp-review-q">' + esc(r.prompt) + '</div><div class="pp-review-line"><b>Your response:</b> ' + esc(r.response) + '</div>' + (!r.correct ? '<div class="pp-review-line"><b>Best answer:</b> ' + esc(r.correctAnswer) + '</div>' : '') + '<div class="pp-review-why"><b>Why:</b> ' + esc(r.why) + '</div></article>').join('') + '</div>';
+      return '<div id="pp-review-panel" class="pp-review" aria-label="Review of the most recent question set"><div class="pp-review-head"><b>Most recent set</b><span class="pp-tiny pp-muted">' + review.items.length + ' questions</span></div><div class="pp-review-list">' +
+        review.items.map((r) => '<details class="pp-review-item ' + (r.correct ? 'pp-review-good' : 'pp-review-bad') + '"><summary><span class="pp-review-mark">' + (r.correct ? '✓' : '×') + '</span><span class="pp-review-summary-text"><span class="pp-review-title">' + esc(r.title || 'Practice question') + '</span><span class="pp-review-summary-link">See the question and why</span></span></summary><div class="pp-review-body"><div class="pp-review-prompt">' + esc(r.prompt) + '</div><div><b>Your response:</b> ' + esc(r.response) + '</div>' + (!r.correct ? '<div><b>Best answer:</b> ' + esc(r.correctAnswer) + '</div>' : '') + '<div class="pp-review-why"><b>Why:</b> ' + esc(r.why) + '</div></div></details>').join('') +
+        '</div></div>';
     }
-
     function current() {
       const list = activitiesFor(cs.tier);
       const pick = cs.style[cs.tier] || (list.length > 1 ? "mix" : list[0].id);
@@ -310,7 +310,7 @@
           const setSize = goals[cs.tier] || 10;
           const prior = cs.reviewBuffer;
           const review = prior && prior.tier === cs.tier && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
-          review.items.push({ prompt: reviewPrompt(unit), response: reviewResponse(unit, fields.resp || {}, activity), correctAnswer: reviewCorrect(unit, activity, fields.resp || {}), correct: fields.correct == null ? false : !!fields.correct, why: unit.why || "Review the worked explanation." });
+          review.items.push({ title: activity.title || activity.type, prompt: reviewPrompt(unit), response: reviewResponse(unit, fields.resp || {}, activity), correctAnswer: reviewCorrect(unit, activity, fields.resp || {}), correct: fields.correct == null ? false : !!fields.correct, why: unit.why || "Review the worked explanation." });
           cs.reviewBuffer = review;
           if (review.items.length >= setSize) cs.lastReview = review;
           cs.reviewOpen = false;
