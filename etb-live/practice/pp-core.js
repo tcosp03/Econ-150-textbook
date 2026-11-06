@@ -159,11 +159,11 @@
     S.concepts = S.concepts || {};
     const cs = S.concepts[concept.id] = S.concepts[concept.id] || { tier: null, style: {}, counts: {}, mixTurn: {}, act: {} };
     // Discard review records created by older formatters that stored indexes or raw objects.
-    if (cs.reviewVersion !== 4) {
-      cs.reviewVersion = 3;
-      cs.reviewBuffer = null;
-      cs.lastReview = null;
+    if (cs.reviewVersion !== 5) {
+      cs.reviewVersion = 5;
+      cs.reviews = {};
     }
+    cs.reviews = cs.reviews || {};
     // Reviews are intentionally closed whenever the concept-check page opens.
     // The button can still open the saved review during the current session.
     cs.reviewOpen = false;
@@ -174,6 +174,20 @@
 
     function activitiesFor(t) { return concept.activities.filter((a) => a.tier === t && PP.renderers[a.type]); }
 
+    function reviewState() {
+      const key = String(cs.tier);
+      cs.reviews[key] = cs.reviews[key] || { buffer: null, last: null };
+      return cs.reviews[key];
+    }
+    function reviewGoal() { return goals[cs.tier] || 10; }
+    function syncReviewButton() {
+      const b = rootEl.querySelector("#pp-review");
+      if (!b) return;
+      const goal = reviewGoal(), state = reviewState();
+      const ready = !!(state.last && state.last.items && state.last.items.length === goal);
+      b.disabled = !ready;
+      b.textContent = ready && cs.reviewOpen ? "Hide review" : "Review last " + goal + " questions";
+    }
     function reviewPrompt(unit) {
       return unit.prompt || unit.text || unit.term || (unit.left && unit.right ? unit.left + " vs. " + unit.right : "Question");
     }
@@ -248,9 +262,10 @@
       h += '<p class="pp-instruction"><b>' + esc(activity.title) + (/[.?!:]$/.test(activity.title) ? "" : ".") + "</b> " + esc(activity.instructions || DEFAULT_INSTRUCTIONS[activity.type] || "") + "</p>";
       h += '<div class="pp-progress"><div class="pp-bar"><span style="width:' + Math.min(100, (done / goal) * 100) + '%"></span></div><div class="pp-tiny pp-muted">' +
         Math.min(done, goal) + " / " + goal + " suggested. " + (done >= goal ? "Move on when you feel ready." : "A guide, not a grade.") + "</div></div>";
+      const reviewStateNow = reviewState(), reviewGoalNow = reviewGoal(), reviewReadyNow = !!(reviewStateNow.last && reviewStateNow.last.items && reviewStateNow.last.items.length === reviewGoalNow);
       h += '<div id="pp-activity" aria-live="polite"></div>';
-      h += '<div class="pp-review-row"><div class="pp-review-actions"><button type="button" id="pp-review" aria-expanded="' + (cs.reviewOpen ? "true" : "false") + '">' + (cs.reviewOpen ? "Hide review" : "Review last 10 questions") + '</button></div>';
-      if (cs.reviewOpen) h += reviewHtml(cs.lastReview || cs.reviewBuffer);
+      h += '<div class="pp-review-row"><div class="pp-review-actions"><button type="button" id="pp-review"' + (reviewReadyNow ? '' : ' disabled') + ' aria-expanded="' + (cs.reviewOpen ? "true" : "false") + '">' + (cs.reviewOpen ? "Hide review" : "Review last " + reviewGoalNow + " questions") + '</button></div>';
+      if (cs.reviewOpen && reviewReadyNow) h += reviewHtml(reviewStateNow.last);
       h += '</div></div>';
       rootEl.innerHTML = h;
 
@@ -261,12 +276,13 @@
       if (reviewButton) reviewButton.onclick = () => {
         cs.reviewOpen = !cs.reviewOpen;
         store.save();
-        reviewButton.textContent = cs.reviewOpen ? "Hide review" : "Review last 10 questions";
+        syncReviewButton();
         reviewButton.setAttribute("aria-expanded", cs.reviewOpen ? "true" : "false");
         const row = rootEl.querySelector(".pp-review-row");
         const existing = rootEl.querySelector("#pp-review-panel");
-        if (cs.reviewOpen && !existing && row) {
-          row.insertAdjacentHTML("beforeend", reviewHtml(cs.lastReview || cs.reviewBuffer));
+        const stateNow = reviewState(), readyNow = !!(stateNow.last && stateNow.last.items && stateNow.last.items.length === reviewGoal());
+        if (cs.reviewOpen && readyNow && !existing && row) {
+          row.insertAdjacentHTML("beforeend", reviewHtml(stateNow.last));
         } else if (!cs.reviewOpen && existing) {
           existing.remove();
         }
@@ -279,9 +295,7 @@
         state: ast,
         save: () => store.save(),
         count: () => {
-          const goal = goals[cs.tier] || 10;
-          if ((cs.counts[cs.tier] || 0) >= goal) cs.counts[cs.tier] = 0;
-          cs.counts[cs.tier] = (cs.counts[cs.tier] || 0) + 1;
+          cs.counts[cs.tier] = (reviewState().buffer && reviewState().buffer.items ? reviewState().buffer.items.length : 0);
           store.save(); updateProgress();
         },
         roundDone: () => {
@@ -307,14 +321,17 @@
             correct: fields.correct == null ? null : !!fields.correct,
             resp: fields.resp || {}, misc: (fields.misc || []).filter(Boolean), extra: fields.extra || undefined
           });
-          const setSize = goals[cs.tier] || 10;
-          const prior = cs.reviewBuffer;
-          const review = prior && prior.tier === cs.tier && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
+          const setSize = reviewGoal();
+          const state = reviewState();
+          const prior = state.buffer;
+          const review = prior && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
           review.items.push({ title: activity.title || activity.type, prompt: reviewPrompt(unit), response: reviewResponse(unit, fields.resp || {}, activity), correctAnswer: reviewCorrect(unit, activity, fields.resp || {}), correct: fields.correct == null ? false : !!fields.correct, why: unit.why || "Review the worked explanation." });
-          cs.reviewBuffer = review;
-          if (review.items.length >= setSize) cs.lastReview = review;
+          if (review.items.length >= setSize) { state.last = review; state.buffer = { activityId: activity.id, tier: cs.tier, items: [] }; }
+          else state.buffer = review;
+          cs.counts[cs.tier] = state.buffer.items.length;
           cs.reviewOpen = false;
           store.save();
+          syncReviewButton();
           return ev;
         }
       };
@@ -323,7 +340,7 @@
     }
 
     function updateProgress() {
-      const goal = goals[cs.tier] || 5, done = cs.counts[cs.tier] || 0;
+      const goal = reviewGoal(), done = reviewState().buffer && reviewState().buffer.items ? reviewState().buffer.items.length : 0;
       const bar = rootEl.querySelector(".pp-progress .pp-bar span");
       const txt = rootEl.querySelector(".pp-progress .pp-tiny");
       if (bar) bar.style.width = Math.min(100, (done / goal) * 100) + "%";
