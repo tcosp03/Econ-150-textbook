@@ -238,7 +238,21 @@
     function current() {
       const list = activitiesFor(cs.tier);
       const pick = cs.style[cs.tier] || (list.length > 1 ? "mix" : list[0].id);
-      if (pick === "mix") return { mix: true, activity: list[(cs.mixTurn[cs.tier] || 0) % list.length], list };
+      if (pick === "mix") {
+        cs.mixChoice = cs.mixChoice || {};
+        cs.mixLast = cs.mixLast || {};
+        const key = String(cs.tier);
+        const valid = list.map((a) => a.id);
+        let chosen = cs.mixChoice[key];
+        if (!valid.includes(chosen)) {
+          const candidates = list.filter((a) => a.id !== cs.mixLast[key]);
+          const pool = candidates.length ? candidates : list;
+          chosen = pool[Math.floor(Math.random() * pool.length)].id;
+          cs.mixChoice[key] = chosen;
+          store.save();
+        }
+        return { mix: true, activity: list.find((a) => a.id === chosen) || list[0], list };
+      }
       return { mix: false, activity: list.find((a) => a.id === pick) || list[0], list };
     }
 
@@ -299,7 +313,16 @@
           store.save(); updateProgress();
         },
         roundDone: () => {
-          if (mix) { cs.mixTurn[cs.tier] = (cs.mixTurn[cs.tier] || 0) + 1; store.save(); render(); return true; }
+          if (mix) {
+            cs.mixLast = cs.mixLast || {};
+            cs.mixChoice = cs.mixChoice || {};
+            cs.mixLast[String(cs.tier)] = activity.id;
+            delete cs.mixChoice[String(cs.tier)];
+            cs.mixTurn[cs.tier] = (cs.mixTurn[cs.tier] || 0) + 1;
+            store.save();
+            render();
+            return true;
+          }
           return false;
         },
         rerender: () => render(),
