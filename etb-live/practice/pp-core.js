@@ -158,6 +158,12 @@
     const S = store.data;
     S.concepts = S.concepts || {};
     const cs = S.concepts[concept.id] = S.concepts[concept.id] || { tier: null, style: {}, counts: {}, mixTurn: {}, act: {} };
+    // Discard review records created by older formatters that stored indexes or raw objects.
+    if (cs.reviewVersion !== 3) {
+      cs.reviewVersion = 3;
+      cs.reviewBuffer = null;
+      cs.lastReview = null;
+    }
     // Reviews are intentionally closed whenever the concept-check page opens.
     // The button can still open the saved review during the current session.
     cs.reviewOpen = false;
@@ -174,7 +180,10 @@
     function reviewResponse(unit, resp, activity) {
       if (!resp) return "No response recorded";
       if (resp.opt != null && unit.options) return unit.options[resp.opt] || "Unknown choice";
-      if (resp.choice != null && unit.options) return unit.options[resp.choice] || "Unknown choice";
+      if (resp.choice != null) {
+        if (unit.options) return unit.options[resp.choice] || "Unknown choice";
+        if (unit.left != null && unit.right != null) return (resp.choice === 0 ? "A: " + unit.left : "B: " + unit.right);
+      }
       if (resp.label != null && activity.labels) return activity.labels[resp.label] || "Unknown label";
       if (resp.bin != null && activity.bins) return "Category: " + (activity.bins[resp.bin] || "Unknown category") + (resp.how ? " (" + resp.how + ")" : "");
       if (resp.with != null && activity.pairs) {
@@ -192,12 +201,15 @@
       if (resp.how != null) return String(resp.how);
       return Object.keys(resp).length ? JSON.stringify(resp) : "No response recorded";
     }
-    function reviewCorrect(unit, activity) {
+    function reviewCorrect(unit, activity, resp) {
       if (unit.options && unit.answer != null) return unit.options[unit.answer];
       if (activity.labels && unit.answer != null) return activity.labels[unit.answer];
       if (activity.bins && unit.bin != null) return activity.bins[unit.bin];
       if (activity.pairs && unit.right) return "Correct pair: " + unit.left + " → " + unit.right;
-      if (activity.rounds && unit.answers) return unit.answers.map((a) => (a.grade === "A-" ? "A−" : a.grade) + " — " + a.text).join(" | ");
+      if (activity.rounds && unit.answers) {
+        const a = resp && resp.answer != null ? unit.answers[resp.answer] : null;
+        return a ? ((a.grade === "A-" ? "A−" : a.grade) + " — " + a.text) : "See the grading explanation above.";
+      }
       if (Array.isArray(unit.correct)) return unit.correct.join(" ");
       if (unit.answer != null && typeof unit.answer !== "object") return String(unit.answer);
       if (unit.answer && typeof unit.answer === "object" && unit.answer.value != null) return String(unit.answer.value) + (unit.answer.unit ? " " + unit.answer.unit : "");
@@ -285,7 +297,7 @@
           const setSize = goals[cs.tier] || 10;
           const prior = cs.reviewBuffer;
           const review = prior && prior.tier === cs.tier && prior.items.length < setSize ? prior : { activityId: activity.id, tier: cs.tier, items: [] };
-          review.items.push({ prompt: reviewPrompt(unit), response: reviewResponse(unit, fields.resp || {}, activity), correctAnswer: reviewCorrect(unit, activity), correct: fields.correct == null ? false : !!fields.correct, why: unit.why || "Review the worked explanation." });
+          review.items.push({ prompt: reviewPrompt(unit), response: reviewResponse(unit, fields.resp || {}, activity), correctAnswer: reviewCorrect(unit, activity, fields.resp || {}), correct: fields.correct == null ? false : !!fields.correct, why: unit.why || "Review the worked explanation." });
           cs.reviewBuffer = review;
           if (review.items.length >= setSize) cs.lastReview = review;
           cs.reviewOpen = false;
