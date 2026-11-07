@@ -14,6 +14,17 @@
     .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.tier-name{display:flex;justify-content:space-between;font-size:13px;font-weight:750;margin-bottom:5px}.tier-name span:last-child{color:var(--muted);font-weight:600}.tier-bar{height:9px;background:#e6edf0;border-radius:20px;overflow:hidden}.tier-bar span{display:block;height:100%;border-radius:inherit;background:#7da6b5}.tier:nth-child(2) .tier-bar span{background:#d58a23}.tier:nth-child(3) .tier-bar span{background:#8b62b5}.tier.complete .tier-bar span{background:var(--green)}.tier-note{font-size:12px;color:var(--muted);margin-top:5px}.empty{padding:24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:14px}
     @media(max-width:700px){.top,.concept-head{align-items:flex-start;flex-direction:column}.overview{grid-template-columns:1fr}.tiers{grid-template-columns:1fr}.review-grid{grid-template-columns:1fr}.status{white-space:normal}}
   </style>
+  <style>
+    .review{padding:16px;min-height:210px}
+    .review-tier{font-size:18px!important;line-height:1.2;margin:0 0 8px!important;color:var(--navy)}
+    .review-set{font-size:16px;color:var(--muted);margin-bottom:18px}
+    .review-set strong{font-size:22px;color:var(--navy)}
+    .review .count{font-size:32px;line-height:1;font-weight:800;white-space:nowrap}
+    .review .count .slash{font-size:22px;color:var(--muted);font-weight:600;margin:0 2px}
+    .review-score-label{font-size:14px;font-weight:750;color:var(--green);margin-top:6px}
+    .review-wrong{font-size:16px;color:var(--red);margin-top:18px}
+    .review-status{font-size:16px;color:var(--muted);margin-top:18px;line-height:1.35}
+  </style>
 </head>
 <body>
   <main class="dashboard" id="dashboard">
@@ -47,6 +58,30 @@
       function render(bank){var list=document.getElementById("concept-list"),S=read();if(!bank||!bank.concepts){list.innerHTML='<div class="empty">This chapter’s practice data could not be loaded.</div>';return}document.getElementById("chapter-label").textContent=(bank.title||"Chapter")+" · Integrated practice";var concepts=bank.concepts,done=0,total=concepts.length*3;list.innerHTML=concepts.map(function(c){var cs=S.concepts&&S.concepts[c.id]||{},td=[1,2,3].map(function(t){return tierData(cs,t)}),all=td.every(function(x){return x.complete});if(all)done++;return'<article class="concept '+(all?"done":"")+'"><div class="concept-head"><h3>Concept '+esc(c.number)+': '+esc(c.name)+'</h3><span class="concept-state">'+(all?"Complete":"In progress")+'</span></div><div class="tiers">'+td.map(function(x,i){var pct=x.ready?Math.min(100,Math.round(x.correct/x.q.set*100)):Math.min(100,Math.round(x.correct/x.q.set*100));return'<div class="tier '+(x.complete?"complete":"")+'"><div class="tier-name"><span>'+x.q.label+'</span><span>'+x.correct+'/'+x.q.set+' correct</span></div><div class="tier-bar"><span style="width:'+pct+'%"></span></div><div class="tier-note">'+(x.complete?"Requirement met: "+x.q.pass+"/"+x.q.set+" needed":"Need "+x.q.pass+'/'+x.q.set+' to move on')+'</div></div>'}).join("")+'</div></article>'}).join("");var conceptsDone=concepts.filter(function(c){var cs=S.concepts&&S.concepts[c.id]||{};return[1,2,3].every(function(t){return tierData(cs,t).complete})}).length,units=concepts.length*3,completed=conceptsDone*3,pct=units?Math.round(completed/units*100):0;document.getElementById("overall-fill").style.width=pct+"%";document.getElementById("overall-number").textContent=pct+"%";document.getElementById("overall-detail").textContent=conceptsDone+" of "+concepts.length+" concepts complete";document.getElementById("concept-count").textContent=concepts.length+" concepts";var status=document.getElementById("overall-status");status.textContent=conceptsDone===concepts.length?"Homework complete":"Keep practicing";status.classList.toggle("locked",conceptsDone!==concepts.length);document.getElementById("overall-copy").textContent=conceptsDone===concepts.length?"You have met every concept requirement.":"Complete each tier requirement to finish the homework.";var review=document.getElementById("review-grid"),sample=S.concepts&&S.concepts[concepts[0]&&concepts[0].id]||{};review.innerHTML=[1,2,3].map(function(t){var d=tierData(sample,t);return'<div class="review"><h3>'+d.q.label+' · last '+d.q.set+'</h3><div class="count"><span class="good">'+d.correct+' right</span></div><div class="subtle"><span class="bad">'+d.wrong+' wrong</span>'+(d.ready?" · Completed set":" · No completed set")+'</div></div>'}).join("")}
       loadBank(render);
     })();
+  </script>
+  <script>
+  (function(){
+    var grid=document.getElementById('review-grid');
+    if(!grid)return;
+    function tidy(){
+      grid.querySelectorAll('.review').forEach(function(card){
+        var h=card.querySelector('h3'),count=card.querySelector('.count'),sub=card.querySelector('.subtle');
+        if(!h||!count||!sub||card.getAttribute('data-tidied')==='1')return;
+        var match=h.textContent.match(/(Tier\s+[123])\s*[·-]\s*last\s*(\d+)/i);
+        if(!match)return;
+        var total=match[2],completed=/Completed set/i.test(sub.textContent);
+        var correct=(count.textContent.match(/\d+/)||['0'])[0];
+        var wrong=(sub.textContent.match(/(\d+)\s+wrong/i)||[])[1];
+        card.innerHTML='<h3 class="review-tier">'+match[1]+'</h3>'+
+          '<div class="review-set">Last <strong>'+total+'</strong> questions</div>'+
+          '<div class="count"><span class="good">'+(completed?correct:'—')+' <span class="slash">/</span> '+total+'</span></div>'+
+          (completed?'<div class="review-score-label">correct</div><div class="review-wrong">'+(wrong||'0')+' wrong</div>':'<div class="review-status">No completed set</div>');
+        card.setAttribute('data-tidied','1');
+      });
+    }
+    tidy();
+    new MutationObserver(tidy).observe(grid,{childList:true,subtree:true});
+  })();
   </script>
 </body>
 </html>
