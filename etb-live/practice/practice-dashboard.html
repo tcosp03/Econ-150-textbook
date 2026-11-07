@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Practice dashboard</title>
+  <style>
+    :root{--navy:#183d61;--teal:#176b82;--ink:#17324d;--muted:#678096;--line:#d5e1e8;--soft:#f5f8fa;--green:#258452;--gold:#c38b12;--red:#b94739}
+    *{box-sizing:border-box}body{margin:0;background:#f4f6f7;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+    .dashboard{max-width:980px;margin:0 auto;padding:28px 22px 56px}.eyebrow{color:#3d7890;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.top{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:24px}.top h1{margin:4px 0 0;font-size:32px;line-height:1.1}.status{padding:9px 14px;border-radius:999px;background:#e8f3ec;color:#17663d;font-weight:750;white-space:nowrap}.status.locked{background:#edf1f4;color:#607586}
+    .overview{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-bottom:24px}.card,.concept{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 8px #183d6110}.card{padding:20px}.card h2{margin:0 0 4px;font-size:19px}.subtle{color:var(--muted);font-size:14px}.overall-bar{height:12px;background:#e3ebef;border-radius:20px;overflow:hidden;margin:18px 0 8px}.overall-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#299069);border-radius:inherit;transition:width .25s}.summary-number{font-size:30px;font-weight:800;color:var(--navy)}
+    .review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.review{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft)}.review h3{font-size:13px;margin:0 0 5px}.review .count{font-size:21px;font-weight:800}.review .good{color:var(--green)}.review .bad{color:var(--red)}
+    .concepts-heading{display:flex;justify-content:space-between;align-items:end;margin:28px 0 10px}.concepts-heading h2{margin:0;font-size:22px}.concept-list{display:grid;gap:12px}.concept{padding:17px 19px}.concept-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:13px}.concept-head h3{margin:0;font-size:18px}.concept-state{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.concept.done{border-color:#a9d8bb}.concept.done .concept-state{color:var(--green)}
+    .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.tier-name{display:flex;justify-content:space-between;font-size:13px;font-weight:750;margin-bottom:5px}.tier-name span:last-child{color:var(--muted);font-weight:600}.tier-bar{height:9px;background:#e6edf0;border-radius:20px;overflow:hidden}.tier-bar span{display:block;height:100%;border-radius:inherit;background:#7da6b5}.tier:nth-child(2) .tier-bar span{background:#d58a23}.tier:nth-child(3) .tier-bar span{background:#8b62b5}.tier.complete .tier-bar span{background:var(--green)}.tier-note{font-size:12px;color:var(--muted);margin-top:5px}.empty{padding:24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:14px}
+    @media(max-width:700px){.top,.concept-head{align-items:flex-start;flex-direction:column}.overview{grid-template-columns:1fr}.tiers{grid-template-columns:1fr}.review-grid{grid-template-columns:1fr}.status{white-space:normal}}
+  </style>
+</head>
+<body>
+  <main class="dashboard" id="dashboard">
+    <header class="top"><div><div class="eyebrow" id="chapter-label">Integrated practice</div><h1>Homework dashboard</h1></div><div class="status locked" id="overall-status">Loading progress…</div></header>
+    <section class="overview">
+      <div class="card"><h2>Overall progress</h2><div class="subtle" id="overall-copy">Checking your concept progress.</div><div class="overall-bar"><span id="overall-fill" style="width:0%"></span></div><div><span class="summary-number" id="overall-number">0%</span> <span class="subtle" id="overall-detail"></span></div></div>
+      <div class="card"><h2>Last mixed review</h2><div class="subtle">Your most recent completed group by tier.</div><div class="review-grid" id="review-grid"></div></div>
+    </section>
+    <div class="concepts-heading"><h2>Major concepts</h2><span class="subtle" id="concept-count"></span></div>
+    <section class="concept-list" id="concept-list"><div class="empty">Loading concepts…</div></section>
+  </main>
+  <script>
+    /* Reuse in another chapter by changing these three values. The bank script
+       must register window.PP_BANKS[bankId], just like the practice engine. */
+    (function(){
+      var params=new URLSearchParams(location.search);
+      var defaults={bankId:"edcor-310-ch1",storageKey:"pp:edcor-310-ch1:1",bankUrl:"banks/edcor-310-ch1.js"};
+      window.PP_DASHBOARD_CONFIG=Object.assign(defaults,window.PP_DASHBOARD_CONFIG||{},{
+        bankId:params.get("bank")||defaults.bankId,
+        storageKey:params.get("storage")||defaults.storageKey,
+        bankUrl:params.get("bankUrl")||defaults.bankUrl
+      });
+    })();
+    (function(){
+      "use strict";
+      var cfg=window.PP_DASHBOARD_CONFIG, thresholds={1:{set:10,pass:8,label:"Tier 1"},2:{set:5,pass:4,label:"Tier 2"},3:{set:3,pass:2,label:"Tier 3"}};
+      function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+      function loadBank(done){if(window.PP_BANKS&&window.PP_BANKS[cfg.bankId])return done(window.PP_BANKS[cfg.bankId]);var s=document.createElement("script");s.src=cfg.bankUrl;s.onload=function(){done(window.PP_BANKS&&window.PP_BANKS[cfg.bankId])};s.onerror=function(){done(null)};document.head.appendChild(s)}
+      function read(){try{return JSON.parse(localStorage.getItem(cfg.storageKey)||"{}")}catch(e){return {}}}
+      function tierData(cs,t){var q=thresholds[t],r=cs&&cs.reviews&&cs.reviews[String(t)]&&cs.reviews[String(t)].last,items=r&&Array.isArray(r.items)?r.items:[];var correct=items.filter(function(x){return x.correct}).length,wrong=items.length-correct;return{q:q,items:items,correct:correct,wrong:wrong,ready:items.length>=q.set,complete:items.length>=q.set&&correct>=q.pass}}
+      function render(bank){var list=document.getElementById("concept-list"),S=read();if(!bank||!bank.concepts){list.innerHTML='<div class="empty">This chapter’s practice data could not be loaded.</div>';return}document.getElementById("chapter-label").textContent=(bank.title||"Chapter")+" · Integrated practice";var concepts=bank.concepts,done=0,total=concepts.length*3;list.innerHTML=concepts.map(function(c){var cs=S.concepts&&S.concepts[c.id]||{},td=[1,2,3].map(function(t){return tierData(cs,t)}),all=td.every(function(x){return x.complete});if(all)done++;return'<article class="concept '+(all?"done":"")+'"><div class="concept-head"><h3>Concept '+esc(c.number)+': '+esc(c.name)+'</h3><span class="concept-state">'+(all?"Complete":"In progress")+'</span></div><div class="tiers">'+td.map(function(x,i){var pct=x.ready?Math.min(100,Math.round(x.correct/x.q.set*100)):Math.min(100,Math.round(x.correct/x.q.set*100));return'<div class="tier '+(x.complete?"complete":"")+'"><div class="tier-name"><span>'+x.q.label+'</span><span>'+x.correct+'/'+x.q.set+' correct</span></div><div class="tier-bar"><span style="width:'+pct+'%"></span></div><div class="tier-note">'+(x.complete?"Requirement met: "+x.q.pass+"/"+x.q.set+" needed":"Need "+x.q.pass+'/'+x.q.set+' to move on')+'</div></div>'}).join("")+'</div></article>'}).join("");var conceptsDone=concepts.filter(function(c){var cs=S.concepts&&S.concepts[c.id]||{};return[1,2,3].every(function(t){return tierData(cs,t).complete})}).length,units=concepts.length*3,completed=conceptsDone*3,pct=units?Math.round(completed/units*100):0;document.getElementById("overall-fill").style.width=pct+"%";document.getElementById("overall-number").textContent=pct+"%";document.getElementById("overall-detail").textContent=conceptsDone+" of "+concepts.length+" concepts complete";document.getElementById("concept-count").textContent=concepts.length+" concepts";var status=document.getElementById("overall-status");status.textContent=conceptsDone===concepts.length?"Homework complete":"Keep practicing";status.classList.toggle("locked",conceptsDone!==concepts.length);document.getElementById("overall-copy").textContent=conceptsDone===concepts.length?"You have met every concept requirement.":"Complete each tier requirement to finish the homework.";var review=document.getElementById("review-grid"),sample=S.concepts&&S.concepts[concepts[0]&&concepts[0].id]||{};review.innerHTML=[1,2,3].map(function(t){var d=tierData(sample,t);return'<div class="review"><h3>'+d.q.label+' · last '+d.q.set+'</h3><div class="count"><span class="good">'+d.correct+' right</span></div><div class="subtle"><span class="bad">'+d.wrong+' wrong</span>'+(d.ready?" · Completed set":" · No completed set")+'</div></div>'}).join("")}
+      loadBank(render);
+    })();
+  </script>
+</body>
+</html>
