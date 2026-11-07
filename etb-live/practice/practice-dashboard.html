@@ -40,6 +40,11 @@
     .overview .card:nth-child(2) .review .count{font-size:24px;margin-top:6px}
     .overview .card:nth-child(2) .review .count .slash{font-size:18px}
   </style>
+
+  <style>
+    .reset-homework{display:block;width:100%;margin:28px 0 0;padding:11px 16px;border:1px solid #b94739;border-radius:9px;background:#b94739;color:#fff;font:700 14px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer}
+    .reset-homework:hover{background:#96372d;border-color:#96372d}
+  </style>
 </head>
 <body>
   <main class="dashboard" id="dashboard">
@@ -50,6 +55,7 @@
     </section>
     <div class="concepts-heading"><h2>Major concepts</h2><span class="subtle" id="concept-count"></span></div>
     <section class="concept-list" id="concept-list"><div class="empty">Loading concepts…</div></section>
+    <button id="reset-homework" class="reset-homework" type="button">Reset homework progress</button>
   </main>
   <script>
     /* Reuse in another chapter by changing these three values. The bank script
@@ -94,6 +100,23 @@
     }
     tidy();
     new MutationObserver(tidy).observe(grid,{childList:true,subtree:true});
+  })();
+  </script>
+
+  <script>
+  (function(){
+    var button=document.getElementById('reset-homework');
+    if(!button)return;
+    button.addEventListener('click',function(){
+      if(!window.confirm('Reset all Chapter 17 homework progress, including practice, review, readiness, and FRQ progress?'))return;
+      try{
+        localStorage.removeItem('pp:econ-150-ch17:1');
+        Object.keys(localStorage).forEach(function(key){
+          if(key.indexOf('pp-frq-open:')===0&&/chapter17\\.html/i.test(key))localStorage.removeItem(key);
+        });
+      }catch(e){}
+      window.location.reload();
+    });
   })();
   </script>
 </body>
