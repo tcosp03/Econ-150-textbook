@@ -221,6 +221,11 @@
         /* Record one scored response (pp-event/1). unit must carry id and _v.
            fields: {correct, resp, misc?, key?, extra?} */
         record: (unit, fields) => {
+          const correct = fields.correct === true;
+          if (correct) {
+            cs.correct = cs.correct || {};
+            cs.correct[activity.tier] = (cs.correct[activity.tier] || 0) + 1;
+          }
           S.attempts = S.attempts || {};
           const n = S.attempts[unit.id] = (S.attempts[unit.id] || 0) + 1;
           store.save();

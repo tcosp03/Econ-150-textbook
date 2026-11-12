@@ -1,53 +1,39 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Practice dashboard</title>
-  <style>
-    :root{--navy:#183d61;--teal:#176b82;--ink:#17324d;--muted:#678096;--line:#d5e1e8;--soft:#f5f8fa;--green:#258452;--gold:#c38b12;--red:#b94739}
-    *{box-sizing:border-box}body{margin:0;background:#f4f6f7;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-    .dashboard{max-width:980px;margin:0 auto;padding:28px 22px 56px}.eyebrow{color:#3d7890;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.top{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:24px}.top h1{margin:4px 0 0;font-size:32px;line-height:1.1}.status{padding:9px 14px;border-radius:999px;background:#e8f3ec;color:#17663d;font-weight:750;white-space:nowrap}.status.locked{background:#edf1f4;color:#607586}
-    .overview{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-bottom:24px}.card,.concept{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 8px #183d6110}.card{padding:20px}.card h2{margin:0 0 4px;font-size:19px}.subtle{color:var(--muted);font-size:14px}.overall-bar{height:12px;background:#e3ebef;border-radius:20px;overflow:hidden;margin:18px 0 8px}.overall-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#299069);border-radius:inherit;transition:width .25s}.summary-number{font-size:30px;font-weight:800;color:var(--navy)}
-    .review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.review{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft)}.review h3{font-size:13px;margin:0 0 5px}.review .count{font-size:21px;font-weight:800}.review .good{color:var(--green)}.review .bad{color:var(--red)}
-    .concepts-heading{display:flex;justify-content:space-between;align-items:end;margin:28px 0 10px}.concepts-heading h2{margin:0;font-size:22px}.concept-list{display:grid;gap:12px}.concept{padding:17px 19px}.concept-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:13px}.concept-head h3{margin:0;font-size:18px}.concept-state{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.concept.done{border-color:#a9d8bb}.concept.done .concept-state{color:var(--green)}
-    .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.tier-name{display:flex;justify-content:space-between;font-size:13px;font-weight:750;margin-bottom:5px}.tier-name span:last-child{color:var(--muted);font-weight:600}.tier-bar{height:9px;background:#e6edf0;border-radius:20px;overflow:hidden}.tier-bar span{display:block;height:100%;border-radius:inherit;background:#7da6b5}.tier:nth-child(2) .tier-bar span{background:#d58a23}.tier:nth-child(3) .tier-bar span{background:#8b62b5}.tier.complete .tier-bar span{background:var(--green)}.tier-note{font-size:12px;color:var(--muted);margin-top:5px}.empty{padding:24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:14px}
-    @media(max-width:700px){.top,.concept-head{align-items:flex-start;flex-direction:column}.overview{grid-template-columns:1fr}.tiers{grid-template-columns:1fr}.review-grid{grid-template-columns:1fr}.status{white-space:normal}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Homework dashboard</title>
+<style>
+:root{--navy:#183d61;--teal:#147b91;--ink:#17324d;--muted:#678096;--line:#d5e1e8;--green:#258452}
+*{box-sizing:border-box}body{margin:0;background:#f4f6f7;color:var(--ink);font:14px/1.4 Arial,sans-serif}
+.dashboard{padding:12px 14px 40px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.top h1{margin:0;font-size:24px;line-height:1.1;color:var(--navy)}
+.status{padding:10px 16px;border-radius:999px;background:#edf1f4;color:#607586;font-size:16px;font-weight:800;text-align:center;line-height:1.05;white-space:nowrap}.status small{display:block;font-size:12px;margin-top:3px;font-weight:600}.status.ready{background:#e8f3ec;color:#17663d}
+.instructions{border:1px solid #b9d5df;border-left:5px solid var(--teal);border-radius:10px;background:#eef6f8;padding:11px 14px;margin:0 0 18px;color:var(--ink)}.instructions strong{font-size:15px}.instructions ol{margin:6px 0 0 20px;padding:0}.instructions li{padding:2px 0}
+.heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 8px}.heading h2{margin:0;color:var(--navy);font-size:24px}.heading span{color:var(--muted);font-size:18px}
+.concept-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.concept{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px;box-shadow:0 2px 7px #183d6110}.concept-head{margin-bottom:8px}.concept-head h3{margin:0;color:var(--navy);font-size:18px;line-height:1.1}.concept-state{display:block;margin-top:7px;color:#63809a;font-size:13px;font-weight:800;letter-spacing:.04em}.concept.done{border-color:#9ccdad}.concept.done .concept-state{color:var(--green)}
+.tier{margin-top:8px}.tier-name{display:flex;justify-content:space-between;gap:8px;color:var(--navy);font-weight:700}.tier-name span:last-child{font-weight:400;color:#55728b}.tier-bar{height:8px;margin-top:4px;background:#e4ecef;border-radius:20px;overflow:hidden}.tier-bar span{display:block;height:100%;background:#7da6b5;border-radius:inherit}.tier:nth-child(2) .tier-bar span{background:#d58a23}.tier:nth-child(3) .tier-bar span{background:#8b62b5}.tier.complete .tier-bar span{background:var(--green)}.tier-note{margin-top:3px;color:#587792;font-size:12px}.empty{padding:24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:12px}
+@media(max-width:560px){.top{align-items:flex-start}.top h1{font-size:22px}.status{font-size:14px;padding:8px 10px}.concept-list{grid-template-columns:1fr}.concept-head h3{font-size:17px}}
+</style>
 </head>
 <body>
-  <main class="dashboard" id="dashboard">
-    <header class="top"><div><div class="eyebrow" id="chapter-label">Integrated practice</div><h1>Homework dashboard</h1></div><div class="status locked" id="overall-status">Loading progress…</div></header>
-    <section class="overview">
-      <div class="card"><h2>Overall progress</h2><div class="subtle" id="overall-copy">Checking your concept progress.</div><div class="overall-bar"><span id="overall-fill" style="width:0%"></span></div><div><span class="summary-number" id="overall-number">0%</span> <span class="subtle" id="overall-detail"></span></div></div>
-      <div class="card"><h2>Last mixed review</h2><div class="subtle">Your most recent completed group by tier.</div><div class="review-grid" id="review-grid"></div></div>
-    </section>
-    <div class="concepts-heading"><h2>Major concepts</h2><span class="subtle" id="concept-count"></span></div>
-    <section class="concept-list" id="concept-list"><div class="empty">Loading concepts…</div></section>
-  </main>
-  <script>
-    /* Reuse in another chapter by changing these three values. The bank script
-       must register window.PP_BANKS[bankId], just like the practice engine. */
-    (function(){var p=new URLSearchParams(location.search);window.PP_DASHBOARD_CONFIG=window.PP_DASHBOARD_CONFIG||{bankId:p.get("bank")||"econ-150-ch17",storageKey:p.get("storage")||"pp:econ-150-ch17:1",bankUrl:p.get("bankUrl")||"banks/econ-150-ch17.js"};})();
-    (function(){
-      "use strict";
-      var cfg=window.PP_DASHBOARD_CONFIG;
-      function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-      function loadBank(done){if(window.PP_BANKS&&window.PP_BANKS[cfg.bankId])return done(window.PP_BANKS[cfg.bankId]);var s=document.createElement("script");s.src=cfg.bankUrl;s.onload=function(){done(window.PP_BANKS&&window.PP_BANKS[cfg.bankId])};s.onerror=function(){done(null)};document.head.appendChild(s)}
-      function read(){try{return JSON.parse(localStorage.getItem(cfg.storageKey)||"{}")}catch(e){return {}}}
-      function goals(bank){return bank&&bank.settings&&bank.settings.goals||{1:10,2:5,3:3}}
-      function tierData(cs,t,bank){var g=Number(goals(bank)[t]||0),count=Number(cs&&cs.counts&&cs.counts[t]||0);return{goal:g,count:Math.min(count,g),complete:g>0&&count>=g}}
-      function render(bank){
-        var list=document.getElementById("concept-list"),S=read();
-        if(!bank||!bank.concepts){list.innerHTML='<div class="empty">This chapter’s practice data could not be loaded.</div>';return}
-        var gs=goals(bank),concepts=bank.concepts,doneTiers=0,totalTiers=concepts.length*3,earned=0,totalGoal=0;
-        document.getElementById("chapter-label").textContent=(bank.title||"Chapter")+" · Integrated practice";
-        list.innerHTML=concepts.map(function(c){var cs=S.concepts&&S.concepts[c.id]||{},td=[1,2,3].map(function(t){var d=tierData(cs,t,bank);earned+=d.count;totalGoal+=d.goal;if(d.complete)doneTiers++;return d}),all=td.every(function(x){return x.complete});return'<article class="concept '+(all?"done":"")+'"><div class="concept-head"><h3>Concept '+esc(c.number)+': '+esc(c.name)+'</h3><span class="concept-state">'+(all?"Complete":"In progress")+'</span></div><div class="tiers">'+td.map(function(x,i){var pct=x.goal?Math.min(100,Math.round(x.count/x.goal*100)):0;return'<div class="tier '+(x.complete?"complete":"")+'"><div class="tier-name"><span>Tier '+(i+1)+'</span><span>'+x.count+'/'+x.goal+'</span></div><div class="tier-bar"><span style="width:'+pct+'%"></span></div><div class="tier-note">'+(x.complete?"Goal reached":"Current textbook goal: "+x.goal)+'</div></div>'}).join("")+'</div></article>'}).join("");
-        var pct=totalGoal?Math.round(earned/totalGoal*100):0,conceptsDone=concepts.filter(function(c){var cs=S.concepts&&S.concepts[c.id]||{};return[1,2,3].every(function(t){return tierData(cs,t,bank).complete})}).length;
-        document.getElementById("overall-fill").style.width=pct+"%";document.getElementById("overall-number").textContent=pct+"%";document.getElementById("overall-detail").textContent=doneTiers+" of "+totalTiers+" tiers complete";document.getElementById("concept-count").textContent=concepts.length+" concepts";var status=document.getElementById("overall-status");status.textContent=conceptsDone===concepts.length?"Homework complete":"Keep practicing";status.classList.toggle("locked",conceptsDone!==concepts.length);document.getElementById("overall-copy").textContent=conceptsDone===concepts.length?"You have met every current textbook goal.":"Progress is calculated from the current textbook practice goals.";var review=document.getElementById("review-grid");review.innerHTML=[1,2,3].map(function(t){var total=0,goal=0;concepts.forEach(function(c){var d=tierData(S.concepts&&S.concepts[c.id]||{},t,bank);total+=d.count;goal+=d.goal});return'<div class="review"><h3>Tier '+t+'</h3><div class="count"><span class="good">'+total+' / '+goal+'</span></div><div class="subtle">Across all '+concepts.length+' concepts</div></div>'}).join("")
-      }
-      loadBank(render);
-    })();
-  </script>
+<main class="dashboard">
+<header class="top"><h1>Homework dashboard</h1><div class="status" id="overall-status">Readiness Check<small id="readiness-status">Incomplete</small></div></header>
+<section class="instructions"><strong>There are two ways to complete the homework:</strong><ol><li>Do the practices in each Concept Check and get at least 8/10 questions correct in Tier 1, 4/5 in Tier 2, and 2/3 in Tier 3 to move on.</li><li>After reading the chapter, you can try to get 5 Tier 3 questions correct in a row within the Readiness Check to open the FRQ.</li></ol></section>
+<div class="heading"><h2>Major concepts</h2><span id="concept-count"></span></div>
+<section class="concept-list" id="concept-list"><div class="empty">Loading current textbook practice…</div></section>
+</main>
+<script>
+(function(){
+"use strict";
+var p=new URLSearchParams(location.search),cfg={bankId:p.get("bank")||"econ-150-ch17",storageKey:p.get("storage")||"pp:econ-150-ch17:1",bankUrl:p.get("bankUrl")||"banks/econ-150-ch17.js"},pass={1:8,2:4,3:2},goals={1:10,2:5,3:3};
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function read(){try{return JSON.parse(localStorage.getItem(cfg.storageKey)||"{}")}catch(e){return{}}}
+function load(done){if(window.PP_BANKS&&window.PP_BANKS[cfg.bankId])return done(window.PP_BANKS[cfg.bankId]);var s=document.createElement("script");s.src=cfg.bankUrl;s.onload=function(){done(window.PP_BANKS&&window.PP_BANKS[cfg.bankId])};s.onerror=function(){done(null)};document.head.appendChild(s)}
+function tier(cs,t){var c=Number(cs&&cs.correct&&cs.correct[t]||0);return{correct:c,goal:goals[t],pass:pass[t],pct:Math.min(100,Math.round(c/goals[t]*100)),complete:c>=pass[t]}}
+function render(bank){var list=document.getElementById("concept-list"),S=read();if(!bank||!bank.concepts){list.innerHTML='<div class="empty">This chapter’s current practice data could not be loaded.</div>';return}var concepts=bank.concepts,done=0;list.innerHTML=concepts.map(function(c){var cs=S.concepts&&S.concepts[c.id]||{},d=[1,2,3].map(function(t){return tier(cs,t)}),all=d.every(function(x){return x.complete});if(all)done++;return'<article class="concept '+(all?"done":"")+'"><div class="concept-head"><h3>Concept '+esc(c.number)+': '+esc(c.name)+'</h3><span class="concept-state">'+(all?"COMPLETE":"IN PROGRESS")+'</span></div>'+d.map(function(x,i){return'<div class="tier '+(x.complete?"complete":"")+'"><div class="tier-name"><span>Tier '+(i+1)+'</span><span>'+x.correct+'/'+x.goal+' correct</span></div><div class="tier-bar"><span style="width:'+x.pct+'%"></span></div><div class="tier-note">'+(x.complete?"Requirement met: "+x.pass+"/"+x.goal+" needed":"Need "+x.pass+"/"+x.goal+" to move on")+'</div></div>'}).join("")+'</article>'}).join("");document.getElementById("concept-count").textContent=concepts.length+" concepts";var all=done===concepts.length,status=document.getElementById("overall-status"),rs=document.getElementById("readiness-status");status.classList.toggle("ready",all);rs.textContent=all?"Complete":"Incomplete";var r=S.ready||{};if(r.unlocked)rs.textContent="Complete"}
+load(render);window.setInterval(function(){var b=window.PP_BANKS&&window.PP_BANKS[cfg.bankId];if(b)render(b)},1000);
+})();
+</script>
 </body>
 </html>
