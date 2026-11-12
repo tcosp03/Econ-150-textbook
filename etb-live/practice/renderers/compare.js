@@ -48,7 +48,7 @@
           const ok = st.last === it.answer;
           h += '<div class="pp-feedback' + (ok ? "" : " pp-bad") + '" role="status"><b>' +
             (ok ? "Correct." : "Not quite.") + "</b> " + esc(it.why) + "</div>";
-          if (!ok) h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-next">Next comparison</button></div>';
+          if (!ok) h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-next">' + (ctx.mix ? "Check Question" : "Next comparison") + '</button></div>';
         }
         host.innerHTML = h;
         host.querySelectorAll("[data-cmp]").forEach((b) => (b.onclick = () => answer(Number(b.dataset.cmp))));
@@ -75,7 +75,7 @@
           const it = activity.items[k];
           return '<div class="pp-result pp-no"><b>' + esc(it.left) + " vs. " + esc(it.right) + "</b> → " + (it.answer === 0 ? "A" : "B") + ". " + esc(it.why) + "</div>";
         }).join("");
-        h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-again">New round</button></div>';
+        h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-again">' + (ctx.mix ? "Check Question" : "New round") + '</button></div>';
         host.innerHTML = h;
         host.querySelector("#pp-again").onclick = () => { newRound(); if (!ctx.roundDone()) draw(); };
         ctx.resized();

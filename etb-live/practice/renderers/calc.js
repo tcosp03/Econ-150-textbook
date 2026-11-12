@@ -69,13 +69,13 @@
       function grade(k) {
         const p = deck.problems[k];
         const v = parseNumber(st.entries[k]);
-        if (Number.isNaN(v)) return { ok: false, msg: "Enter a number" + (p.answer.unit === "%" ? " (a negative number for a decrease)." : ".") };
+        if (Number.isNaN(v)) return { ok: false, msg: "Enter a number" + (p.answer.unit === "%" ? " (a negative number for a decrease)." : "."), whatWentWrong: "No usable number was entered.", why: "A calculation must begin with a numerical result that can be checked.", tryNext: "Write the formula first, substitute the given values, and check the units." };
         const numOk = Math.abs(v - p.answer.value) <= p.answer.tolerance + 1e-9;
         const clsOk = !p.classify || st.classes[k] === p.classify.answer;
-        if (numOk && clsOk) return { ok: true, msg: "Correct.", v };
-        if (numOk && !clsOk) return { ok: false, v, classOnly: true, msg: st.classes[k] ? "The number is right. Check the classification: compare it with 1." : "The number is right. Now classify it." };
+        if (numOk && clsOk) return { ok: true, msg: "Correct.", v, why: (p.solution || []).join(" "), tryNext: "Use the same formula and check the units on the next problem." };
+        if (numOk && !clsOk) return { ok: false, v, classOnly: true, msg: st.classes[k] ? "The number is right. Check the classification: compare it with 1." : "The number is right. Now classify it.", whatWentWrong: "The numerical result is correct, but the classification is missing or incorrect.", why: (p.solution || []).join(" "), tryNext: "Compare the result with the benchmark and select the matching classification." };
         const err = (p.common_errors || []).find((e) => Math.abs(v - e.value) <= e.tolerance + 1e-9);
-        return { ok: false, v, err, msg: err ? err.feedback : "Not quite. Check each step" + (st.show.hints ? "." : ", or turn on the hint.") };
+        return { ok: false, v, err, msg: err ? err.feedback : "Not quite. Check each step" + (st.show.hints ? "." : ", or turn on the hint."), whatWentWrong: err ? err.feedback : "The result does not match the expected calculation.", why: (p.solution || []).join(" "), tryNext: "Write the formula, substitute each given value, and check the units." };
       }
 
       function check(keys) {
@@ -87,7 +87,7 @@
             resp: { raw: PP.clip(st.entries[k], 24), value: Number.isFinite(r.v) ? r.v : null, cls: st.classes[k] || null,
                     error: r.err ? r.err.label : r.classOnly ? "classification" : null },
             misc: [r.err && r.err.misconception],
-            extra: { stage: prog[st.stage], supports: Object.assign({}, st.show) }
+            extra: { stage: prog[st.stage], supports: Object.assign({}, st.show), whatWentWrong: r.whatWentWrong || null, why: r.why || null, tryNext: r.tryNext || null }
           });
           delete r.err; delete r.v;
           if (!st.counted[k]) { st.counted[k] = true; ctx.count(); }
@@ -104,10 +104,10 @@
         const checked = st.rows.every((k) => st.results[k]);
         const allOk = st.rows.every((k) => st.results[k] && st.results[k].ok);
         h += '<div class="pp-actions">';
-        if (st.stage > 0 && !allOk) h += '<button type="button" class="pp-primary" id="pp-all">' + (checked ? "Recheck" : "Check all") + "</button>";
+        if (st.stage > 0 && !allOk) h += '<button type="button" class="pp-primary" id="pp-all">' + (ctx.mix ? "Check Question" : (checked ? "Recheck" : "Check all")) + "</button>";
         if (checked) {
           const last = st.stage === prog.length - 1;
-          h += '<button type="button" class="' + (allOk ? "pp-primary" : "") + '" id="pp-next">' + (last ? "New set of " + prog[st.stage] : "Continue to " + prog[st.stage + 1] + " problems") + "</button>";
+          h += '<button type="button" class="' + (allOk ? "pp-primary" : "") + '" id="pp-next">' + (ctx.mix ? "Check Question" : (last ? "New set of " + prog[st.stage] : "Continue to " + prog[st.stage + 1] + " problems")) + "</button>";
         }
         h += "</div>";
         host.innerHTML = h;
