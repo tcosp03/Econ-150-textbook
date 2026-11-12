@@ -77,10 +77,20 @@
     }
   </style>
 
+
+  <style>
+    .homework-instructions{margin:0 0 14px;padding:10px 12px;background:#eef4f8;border:1px solid #cbdde6;border-left:4px solid #176b82;border-radius:8px;color:var(--ink);font-size:12px;line-height:1.45}
+    .homework-instructions strong{color:var(--navy)}
+    .tiers{grid-template-columns:1fr!important;gap:7px}
+    .tier-name{font-size:12px}
+    @media(min-width:520px){.tiers{grid-template-columns:1fr!important;gap:7px}}
+  </style>
+
 </head>
 <body>
   <main class="dashboard" id="dashboard">
     <header class="top"><div><div class="eyebrow" id="chapter-label">Integrated practice</div></div><div class="status locked" id="overall-status">Loading progress…</div></header>
+    <div class="homework-instructions"><strong>There are two ways to complete the homework:</strong> you can do the practices in each concept check and get at least 8/10 questions correct in Tier 1, 4/5 in Tier 2, and 2/3 in Tier 3 to open the FRQ. Or, after reading the chapter, you can try to get 5 Tier 3 questions correct in a row to open the FRQ.</div>
     <div class="concepts-heading"><h2>Major concepts</h2><span class="subtle" id="concept-count"></span></div>
     <section class="concept-list" id="concept-list"><div class="empty">Loading concepts…</div></section>
     <button id="reset-homework" class="reset-homework" type="button">Reset homework progress</button>
