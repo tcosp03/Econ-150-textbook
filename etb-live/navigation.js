@@ -105,11 +105,7 @@
       '' +
       '<select id="etb-nav-chapter" name="chapter" required><option value="">Jump to a Chapter</option>' + makeOptions() + '</select>' +
       '<button type="submit">Go</button>' +
-      '</form>' + next + '<button class="etb-nav-dashboard" type="button">Dashboard</button></div>';
-    var dashboardButton = nav.querySelector(".etb-nav-dashboard");
-    if (dashboardButton) dashboardButton.addEventListener("click", function () {
-      if (typeof window.__etbCh17DashboardToggle === "function") window.__etbCh17DashboardToggle();
-    });
+      '</form>' + next + '</div>';
     document.body.insertBefore(nav, document.body.firstChild);
   }
 
