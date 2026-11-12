@@ -28,7 +28,7 @@
   <script>
     /* Reuse in another chapter by changing these three values. The bank script
        must register window.PP_BANKS[bankId], just like the practice engine. */
-    window.PP_DASHBOARD_CONFIG=window.PP_DASHBOARD_CONFIG||{bankId:"econ-150-ch17",storageKey:"pp:econ-150-ch17:1",bankUrl:"banks/econ-150-ch17.js"};
+    (function(){var p=new URLSearchParams(location.search);window.PP_DASHBOARD_CONFIG=window.PP_DASHBOARD_CONFIG||{bankId:p.get("bank")||"econ-150-ch17",storageKey:p.get("storage")||"pp:econ-150-ch17:1",bankUrl:p.get("bankUrl")||"banks/econ-150-ch17.js"};})();
     (function(){
       "use strict";
       var cfg=window.PP_DASHBOARD_CONFIG;
