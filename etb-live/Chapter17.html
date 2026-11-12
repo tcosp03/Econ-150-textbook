@@ -225,12 +225,23 @@ html,body{overflow-x:clip}.etb{overflow-x:visible}
 <script src="assets/page-rating.js?v=20261031-2"></script>
 <script src="assets/etb-audio.js"></script>
 
+<!-- FLOATING OVERALL PROGRESS -->
+<style>
+.etb-overall-float{position:fixed;top:3px;left:0;right:0;z-index:10002;background:rgba(255,255,255,.97);border-bottom:1px solid #dce3ea;box-shadow:0 1px 5px rgba(26,58,92,.12);font-family:Arial,sans-serif}
+.etb-overall-float-inner{max-width:740px;margin:0 auto;padding:7px 12px}
+.etb-overall-float-meta{display:flex;align-items:center;gap:10px;font-size:12px;color:#5f7587;white-space:nowrap}
+.etb-overall-float-title{font-weight:700;color:#1a3a5c}
+.etb-overall-float-percent{font-size:16px;font-weight:800;color:#1a3a5c}
+.etb-overall-float-bar{height:6px;margin-top:4px;background:#e3ebef;border-radius:20px;overflow:hidden}
+.etb-overall-float-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#176b82,#299069);border-radius:inherit;transition:width .25s}
+body{padding-top:41px!important}
+@media(max-width:620px){.etb-overall-float-meta{gap:6px;font-size:10px}.etb-overall-float-inner{padding:6px 8px}.etb-overall-float-bar{height:5px}body{padding-top:37px!important}}
+</style>
+<div class="etb-overall-float" aria-label="Homework Progress"><div class="etb-overall-float-inner"><div class="etb-overall-float-meta"><span class="etb-overall-float-title">Homework Progress</span><span id="etb-overall-percent" class="etb-overall-float-percent">0%</span></div><div class="etb-overall-float-bar"><span id="etb-overall-fill"></span></div></div></div>
+<script>(function(){var fill=document.getElementById("etb-overall-fill"),percent=document.getElementById("etb-overall-percent");function update(){var s={};try{s=JSON.parse(localStorage.getItem("pp:econ-150-ch17:1")||"{}")}catch(e){}var cs=s.concepts||{},ids=["c1","c2","c3","c4","c5"],passes={1:8,2:4,3:2},earned=0,total=0;ids.forEach(function(id){var c=cs[id]||{};[1,2,3].forEach(function(t){var state=c.reviews&&c.reviews[String(t)]||{},lastItems=state.last&&Array.isArray(state.last.items)?state.last.items:[],bufferItems=state.buffer&&Array.isArray(state.buffer.items)?state.buffer.items:[],lastCorrect=lastItems.filter(function(x){return x.correct}).length,items=lastCorrect>=passes[t]?lastItems:(bufferItems.length?bufferItems:lastItems),correct=items.filter(function(x){return x.correct}).length;earned+=Math.min(correct/Math.max(1,passes[t]),1);total+=1})});var pct=total?Math.round(earned/total*100):0;fill.style.width=pct+"%";percent.textContent=pct+"%"}update();window.addEventListener("storage",update);window.addEventListener("message",function(e){if(e.data&&e.data.kind==="pp-dashboard-progress"&&typeof e.data.percent==="number"){fill.style.width=e.data.percent+"%";percent.textContent=e.data.percent+"%"}});window.setInterval(update,1000)})();</script>
+<!-- /FLOATING OVERALL PROGRESS -->
+
 <style id="ch17-dashboard-styles">
-.ch17-homework-progress{position:fixed;top:9px;left:50%;transform:translateX(-50%);z-index:950;width:min(300px,calc(100vw - 32px));padding:4px 9px;background:rgba(255,255,255,.96);border:1px solid #dce3ea;border-radius:999px;box-shadow:0 2px 8px rgba(26,58,92,.12);font:600 10px/1.2 Arial,sans-serif;color:#526476}
-.ch17-homework-progress-head{display:flex;justify-content:space-between;gap:8px;margin-bottom:3px}
-.ch17-homework-progress-head b{color:#1a3a5c}
-.ch17-homework-progress-bar{height:4px;background:#e9eef2;border-radius:99px;overflow:hidden}
-.ch17-homework-progress-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#2a7a4f,#1a3a5c);border-radius:99px;transition:width .25s ease}
 .ch17-dashboard{position:fixed;right:18px;top:76px;z-index:1500;width:380px;max-width:calc(100vw - 36px);max-height:calc(100vh - 150px);overflow:auto;padding:16px;background:#fff;border:1px solid #cbd8e1;border-top:3px solid #1a3a5c;border-radius:10px;box-shadow:0 8px 28px rgba(26,58,92,.22);font-family:Arial,sans-serif}
 .ch17-dashboard[hidden]{display:none}
 .ch17-dashboard-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
@@ -248,13 +259,9 @@ html,body{overflow-x:clip}.etb{overflow-x:visible}
 .ch17-dashboard-card-meta{display:flex;justify-content:space-between;gap:6px;margin-top:8px;color:#687b8a;font-size:10px}
 .ch17-dashboard-card-bar{height:5px;margin-top:5px;background:#e9eef2;border-radius:99px;overflow:hidden}
 .ch17-dashboard-card-bar span{display:block;height:100%;width:0;background:#2a7a4f;border-radius:99px;transition:width .25s ease}
-@media(max-width:760px){.ch17-dashboard{right:10px;top:58px;width:calc(100vw - 20px);max-width:none}.ch17-dashboard-grid{grid-template-columns:1fr 1fr}.ch17-homework-progress{top:7px}}
+@media(max-width:760px){.ch17-dashboard{right:10px;top:58px;width:calc(100vw - 20px);max-width:none}.ch17-dashboard-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:430px){.ch17-dashboard-grid{grid-template-columns:1fr}}
 </style>
-<div class="ch17-homework-progress" id="ch17-homework-progress" aria-label="Homework Progress">
-  <div class="ch17-homework-progress-head"><span>Homework Progress</span><b id="ch17-homework-progress-pct">0%</b></div>
-  <div class="ch17-homework-progress-bar"><span id="ch17-homework-progress-fill"></span></div>
-</div>
 <aside class="ch17-dashboard" id="ch17-dashboard" hidden aria-labelledby="ch17-dashboard-title">
   <div class="ch17-dashboard-head">
     <div><p class="ch17-dashboard-kicker">Homework Progress</p><h2 class="ch17-dashboard-title" id="ch17-dashboard-title">Market Failures I: Externalities</h2></div>
@@ -273,8 +280,6 @@ html,body{overflow-x:clip}.etb{overflow-x:visible}
 (function(){
   "use strict";
   var dashboard=document.getElementById("ch17-dashboard");
-  var progressPct=document.getElementById("ch17-homework-progress-pct");
-  var progressFill=document.getElementById("ch17-homework-progress-fill");
   var key="pp:econ-150-ch17:1";
   var goals={1:10,2:5,3:3};
   var totalGoal=18;
@@ -293,8 +298,6 @@ html,body{overflow-x:clip}.etb{overflow-x:visible}
       if(b)b.textContent=pct+"%"; if(f)f.style.width=pct+"%"; total+=pct;
     });
     var overall=Math.round(total/cards.length);
-    if(progressPct)progressPct.textContent=overall+"%";
-    if(progressFill)progressFill.style.width=overall+"%";
     var ready=data.ready||{}, status=document.getElementById("ch17-readiness-status");
     if(status)status.textContent=ready.unlocked?"Ready":(ready.started?"In progress":"Not started");
   }
