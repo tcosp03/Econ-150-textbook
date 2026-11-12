@@ -102,10 +102,14 @@
     nav.setAttribute("aria-label", "Textbook chapter navigation");
     nav.innerHTML = '<div class="etb-nav-inner">' + previous +
       '<form class="etb-nav-jump" aria-label="Jump to a chapter" onsubmit="if(this.chapter.value) location.href=this.chapter.value; return false;">' +
-      '<label class="etb-nav-jump-label" for="etb-nav-chapter">Jump to a chapter</label>' +
-      '<select id="etb-nav-chapter" name="chapter" required><option value="">Choose a chapter...</option>' + makeOptions() + '</select>' +
+      '' +
+      '<select id="etb-nav-chapter" name="chapter" required><option value="">Jump to a Chapter</option>' + makeOptions() + '</select>' +
       '<button type="submit">Go</button>' +
-      '</form>' + next + '</div>';
+      '</form>' + next + '<button class="etb-nav-dashboard" type="button">Dashboard</button></div>';
+    var dashboardButton = nav.querySelector(".etb-nav-dashboard");
+    if (dashboardButton) dashboardButton.addEventListener("click", function () {
+      if (typeof window.__etbCh17DashboardToggle === "function") window.__etbCh17DashboardToggle();
+    });
     document.body.insertBefore(nav, document.body.firstChild);
   }
 
