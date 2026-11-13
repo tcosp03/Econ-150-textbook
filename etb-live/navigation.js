@@ -122,7 +122,7 @@
     nav.setAttribute("aria-label", "Textbook chapter navigation");
     nav.innerHTML = '<div class="etb-nav-inner">' + previous +
       '<div class="etb-nav-custom" aria-label="Jump to a chapter">' +
-      '<button type="button" class="etb-nav-select-button placeholder" aria-expanded="false" aria-controls="etb-nav-menu">Jump to a Chapter <span class="etb-nav-select-chevron" aria-hidden="true">⌄</span></button>' +
+      '<button type="button" class="etb-nav-select-button placeholder" aria-expanded="false" aria-controls="etb-nav-menu">Jump to a Chapter <span class="etb-nav-select-chevron" aria-hidden="true"></span></button>' +
       '<div id="etb-nav-menu" class="etb-nav-select-menu" role="menu">' + makeCustomOptions() + '</div>' +
       '</div>' + next + '</div>';
     var picker = nav.querySelector(".etb-nav-custom");
