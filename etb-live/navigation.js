@@ -68,6 +68,16 @@
     }).join("");
   }
 
+  function makeCustomOptions() {
+    return groups.map(function (group) {
+      var html = '<div class="etb-nav-unit" role="presentation">' + group.label + '</div>';
+      for (var i = group.start; i <= group.end; i++) {
+        html += '<button type="button" class="etb-nav-option" data-value="' + chapters[i].file + '">' + optionLabel(chapters[i], i) + '</button>';
+      }
+      return html;
+    }).join("");
+  }
+
   function init() {
     if (!document.body || document.querySelector(".etb-nav")) return;
 
@@ -87,6 +97,16 @@
       ".etb-nav-jump button{height:34px;min-width:42px;padding:0 9px;border:1px solid #172436;border-radius:6px;background:#1a3a5c;color:#fff;font:700 12px Arial,sans-serif;cursor:pointer}",
       ".etb-nav-jump button:hover,.etb-nav-jump button:focus-visible{background:#294e72;outline:none}",
       "@media(max-width:760px){.etb-nav-inner{justify-content:flex-start;gap:6px;padding:7px 8px;overflow-x:auto}.etb-nav a{padding:0 7px;font-size:11px}.etb-nav-jump-label{display:none}.etb-nav-jump select{height:32px;width:180px;min-width:180px;max-width:180px;font:400 11px Arial,sans-serif;padding:0 6px;background:#fff;color:#111820}.etb-nav-jump button{height:32px;min-width:38px;font-size:11px;padding:0 7px}}"
+      ".etb-nav-custom{position:relative;flex:0 1 230px;min-width:0}",
+      ".etb-nav-select-button{display:flex;align-items:center;justify-content:space-between;width:230px;height:34px;padding:0 8px;border:1px solid #cfd8e2;border-radius:6px;background:#fff;color:#1a3a5c;font:400 12px Arial,sans-serif;cursor:pointer;text-align:left}",
+      ".etb-nav-select-button.placeholder{color:#1a3a5c}",
+      ".etb-nav-select-chevron{font-size:15px;line-height:1;margin-left:8px}",
+      ".etb-nav-select-menu{display:none;position:absolute;left:0;bottom:calc(100% + 6px);width:230px;max-height:420px;overflow-y:auto;padding:4px 0;background:#fff;border:1px solid #cfd8e2;border-radius:6px;box-shadow:0 8px 22px rgba(26,58,92,.22);z-index:1100}",
+      ".etb-nav-custom.open .etb-nav-select-menu{display:block}",
+      ".etb-nav-unit{padding:7px 12px 4px;color:#1a3a5c;font:700 12px/1.2 Arial,sans-serif}",
+      ".etb-nav-option{display:block;width:100%;padding:5px 12px;border:0;background:#fff;color:#1a3a5c;font:400 12px/1.2 Arial,sans-serif;text-align:left;cursor:pointer}",
+      ".etb-nav-option:hover,.etb-nav-option:focus{background:#eef4fb;outline:none}",
+      "@media(max-width:760px){.etb-nav-custom{flex:0 0 180px}.etb-nav-select-button{width:180px;height:32px;font-size:11px}.etb-nav-select-menu{width:180px}.etb-nav-unit{font-size:11px}.etb-nav-option{font-size:11px;padding:5px 8px}}"
     ].join("");
     document.head.appendChild(style);
 
@@ -101,13 +121,30 @@
     nav.className = "etb-nav";
     nav.setAttribute("aria-label", "Textbook chapter navigation");
     nav.innerHTML = '<div class="etb-nav-inner">' + previous +
-      '<div class="etb-nav-jump" aria-label="Jump to a chapter">' +
-      '<select id="etb-nav-chapter" class="etb-nav-chapter placeholder" name="chapter" required><option value="" class="etb-nav-placeholder">Jump to a Chapter</option>' + makeOptions() + '</select>' +
+      '<div class="etb-nav-custom" aria-label="Jump to a chapter">' +
+      '<button type="button" class="etb-nav-select-button placeholder" aria-expanded="false" aria-controls="etb-nav-menu">Jump to a Chapter <span class="etb-nav-select-chevron" aria-hidden="true">⌄</span></button>' +
+      '<div id="etb-nav-menu" class="etb-nav-select-menu" role="menu">' + makeCustomOptions() + '</div>' +
       '</div>' + next + '</div>';
-    var chapterSelect = nav.querySelector("#etb-nav-chapter");
-    chapterSelect.addEventListener("change", function () {
-      this.classList.toggle("placeholder", !this.value);
-      if (this.value) window.location.href = this.value;
+    var picker = nav.querySelector(".etb-nav-custom");
+    var trigger = nav.querySelector(".etb-nav-select-button");
+    var menu = nav.querySelector(".etb-nav-select-menu");
+    function setMenu(open) {
+      picker.classList.toggle("open", open);
+      trigger.classList.toggle("open", open);
+      trigger.setAttribute("aria-expanded", String(open));
+    }
+    trigger.addEventListener("click", function (event) {
+      event.stopPropagation();
+      setMenu(!picker.classList.contains("open"));
+    });
+    menu.querySelectorAll(".etb-nav-option").forEach(function (option) {
+      option.addEventListener("click", function () {
+        window.location.href = option.getAttribute("data-value");
+      });
+    });
+    document.addEventListener("click", function () { setMenu(false); });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") setMenu(false);
     });
     document.body.insertBefore(nav, document.body.firstChild);
   }
