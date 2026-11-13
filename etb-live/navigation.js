@@ -82,7 +82,7 @@
       ".etb-nav .etb-nav-disabled{color:#aab4bd;background:#f7f9fb;border-color:#e5eaee}",
       ".etb-nav-jump{display:flex;align-items:center;gap:8px;flex:0 1 230px;min-width:0}",
       ".etb-nav-jump-label{color:#4f5f72;font-size:12px;font-weight:400;white-space:nowrap}",
-      ".etb-nav-jump select{height:34px;width:230px;min-width:230px;max-width:230px;flex:0 0 230px;padding:0 8px;border:1px solid #cfd8e2;border-radius:6px;background:#fff;color:#111820;font:400 12px Arial,sans-serif}.etb-nav-jump select.placeholder{color:#1a3a5c}.etb-nav-jump select option{font-weight:400}.etb-nav-jump select optgroup{font-weight:700}",
+      ".etb-nav-jump select{height:34px;width:230px;min-width:230px;max-width:230px;flex:0 0 230px;padding:0 8px;border:1px solid #cfd8e2;border-radius:6px;background:#fff;color:#111820;font:400 12px Arial,sans-serif}.etb-nav-jump select.placeholder{color:#1a3a5c}.etb-nav-jump select option,.etb-nav-jump select optgroup{font-family:Arial,sans-serif;font-size:12px;line-height:1.2}.etb-nav-jump select option{font-weight:400}.etb-nav-jump select optgroup{font-weight:700}",
       ".etb-nav-jump select:focus-visible{outline:3px solid #b9d0df;outline-offset:2px}",
       ".etb-nav-jump button{height:34px;min-width:42px;padding:0 9px;border:1px solid #172436;border-radius:6px;background:#1a3a5c;color:#fff;font:700 12px Arial,sans-serif;cursor:pointer}",
       ".etb-nav-jump button:hover,.etb-nav-jump button:focus-visible{background:#294e72;outline:none}",
