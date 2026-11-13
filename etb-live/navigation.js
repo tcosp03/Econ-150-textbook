@@ -101,11 +101,9 @@
     nav.className = "etb-nav";
     nav.setAttribute("aria-label", "Textbook chapter navigation");
     nav.innerHTML = '<div class="etb-nav-inner">' + previous +
-      '<form class="etb-nav-jump" aria-label="Jump to a chapter" onsubmit="if(this.chapter.value) location.href=this.chapter.value; return false;">' +
-      '' +
-      '<select id="etb-nav-chapter" name="chapter" required><option value="">Jump to a Chapter</option>' + makeOptions() + '</select>' +
-      '<button type="submit">Go</button>' +
-      '</form>' + next + '</div>';
+      '<div class="etb-nav-jump" aria-label="Jump to a chapter">' +
+      '<select id="etb-nav-chapter" name="chapter" required onchange="if(this.value) window.location.href=this.value;"><option value="">Jump to a Chapter</option>' + makeOptions() + '</select>' +
+      '</div>' + next + '</div>';
     document.body.insertBefore(nav, document.body.firstChild);
   }
 
