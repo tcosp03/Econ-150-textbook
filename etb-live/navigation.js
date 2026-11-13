@@ -100,7 +100,7 @@
       ".etb-nav-custom{position:relative;flex:0 1 230px;min-width:0}",
       ".etb-nav-select-button{display:flex;align-items:center;justify-content:space-between;width:230px;height:34px;padding:0 8px;border:1px solid #cfd8e2;border-radius:6px;background:#fff;color:#1a3a5c;font:700 12px Arial,sans-serif;cursor:pointer;text-align:left}",
       ".etb-nav-select-button.placeholder{color:#1a3a5c}",
-      ".etb-nav-select-chevron{display:flex;align-items:center;height:100%;font-size:15px;line-height:1;margin-left:auto}",
+      ".etb-nav-select-chevron{display:block;width:0;height:0;margin-left:auto;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #1a3a5c}",
       ".etb-nav-select-menu{display:none;position:absolute;left:0;bottom:calc(100% + 6px);width:230px;max-height:420px;overflow-y:auto;padding:4px 0;background:#fff;border:1px solid #cfd8e2;border-radius:6px;box-shadow:0 8px 22px rgba(26,58,92,.22);z-index:1100}",
       ".etb-nav-custom.open .etb-nav-select-menu{display:block}",
       ".etb-nav-unit{padding:7px 12px 4px;color:#1a3a5c;font:700 12px/1.2 Arial,sans-serif}",
