@@ -215,3 +215,18 @@ legend { font-weight: 650; padding: 0 4px; }
 @media (max-width: 520px) { .pp-fig-grid:not(.pp-fig-compact) { grid-template-columns: 1fr; } }
 .pp-fig-compact { max-width: 480px; }
 .pp-fig-cap { text-align: center; font-weight: 700; font-size: .95rem; color: #21313e; margin: 2px 0 -4px; }
+
+
+/* Concept Progress view */
+.pp-view-tabs { display: flex; gap: 6px; margin: 8px 0 12px; border-bottom: 1px solid var(--pp-line); }
+.pp-view-tabs button { flex: 1 1 0; min-height: 38px; padding: 8px 10px; border: 0; border-bottom: 3px solid transparent; border-radius: 8px 8px 0 0; background: transparent; color: var(--pp-muted); font-weight: 700; }
+.pp-view-tabs button[aria-selected="true"] { color: var(--pp-accent); border-bottom-color: var(--pp-accent); background: var(--pp-accent-soft); }
+.pp-concept-progress { padding-top: 2px; }
+.pp-progress-heading { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin-bottom: 12px; color: var(--pp-accent); }
+.pp-progress-heading span { color: var(--pp-muted); font-size: 13px; }
+.pp-concept-tier { margin: 14px 0; }
+.pp-concept-tier-head { display: flex; justify-content: space-between; gap: 10px; color: var(--pp-accent); font-weight: 700; }
+.pp-concept-tier-head span { color: var(--pp-muted); font-weight: 400; }
+.pp-concept-tier-bar { height: 10px; margin-top: 5px; border-radius: 99px; background: var(--pp-line); overflow: hidden; }
+.pp-concept-tier-bar span { display: block; height: 100%; border-radius: inherit; background: var(--pp-accent); }
+.pp-concept-tier-note { margin-top: 4px; color: var(--pp-muted); font-size: 13px; }
