@@ -186,6 +186,14 @@
       }));
     }
 
+    function bindTierButtons() {
+      rootEl.querySelectorAll("[data-tier]").forEach((b) => (b.onclick = () => {
+        cs.tier = Number(b.dataset.tier);
+        store.save();
+        render();
+      }));
+    }
+
     function render() {
       if (cleanup) { try { cleanup(); } catch (e) {} cleanup = null; }
       const { mix, activity, list, ladder } = current();
@@ -195,10 +203,10 @@
       let h = '<div class="pp-panel">';
       h += '<div class="pp-eyebrow">Concept ' + esc(concept.number) + ' practice</div>';
       h += '<div class="pp-title">' + esc(concept.name) + "</div>";
-      h += '<div class="pp-view-tabs" role="tablist" aria-label="Concept practice views">' +
-        '<button type="button" data-view="practice" role="tab" aria-selected="' + (cs.view !== "progress") + '">Practice</button>' +
-        '<button type="button" data-view="progress" role="tab" aria-selected="' + (cs.view === "progress") + '">Concept Progress</button>' +
-        '</div>';
+      const tierControls = '<div class="pp-tiers" role="group" aria-label="Practice level">' + tiers.map((t) =>
+        '<button type="button" data-tier="' + t + '" aria-pressed="' + (t === cs.tier) + '">' + '<span class="pp-tier-n">Tier ' + t + "</span>" + esc(TIER_LABELS[t]) + "</button>").join("") +
+        '<button type="button" class="pp-progress-toggle" data-view="' + (cs.view === "progress" ? "practice" : "progress") + '" aria-pressed="' + (cs.view === "progress") + '">' + (cs.view === "progress" ? "Practice" : "Concept Progress") + "</button></div>";
+      h += tierControls;
       if (cs.view === "progress") {
         h += '<section class="pp-concept-progress" aria-label="Concept progress"><div class="pp-progress-heading"><b>' + esc(concept.name) + '</b><span>Correct answers needed to move on</span></div>';
         h += tiers.map((t) => {
@@ -211,10 +219,9 @@
         h += '</section></div>';
         rootEl.innerHTML = h;
         bindViewTabs();
+        bindTierButtons();
         return;
       }
-      h += '<div class="pp-tiers" role="group" aria-label="Practice level">' + tiers.map((t) =>
-        '<button type="button" data-tier="' + t + '" aria-pressed="' + (t === cs.tier) + '">' + '<span class="pp-tier-n">Tier ' + t + "</span>" + esc(TIER_LABELS[t]) + "</button>").join("") + "</div>";
       if (list.length > 1) {
         h += '<div class="pp-controls"><label for="pp-style">Practice style</label><select id="pp-style">' +
           (ladder ? "" : '<option value="mix"' + (pick === "mix" ? " selected" : "") + ">Mix it up</option>") +
@@ -229,7 +236,7 @@
       rootEl.innerHTML = h;
       bindViewTabs();
 
-      rootEl.querySelectorAll("[data-tier]").forEach((b) => (b.onclick = () => { cs.tier = Number(b.dataset.tier); store.save(); render(); }));
+      bindTierButtons();
       const sel = rootEl.querySelector("#pp-style");
       if (sel) sel.onchange = () => { cs.style[cs.tier] = sel.value; store.save(); render(); };
 

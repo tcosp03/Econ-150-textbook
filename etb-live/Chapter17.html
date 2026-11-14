@@ -228,16 +228,16 @@ html,body{overflow-x:clip}.etb{overflow-x:visible}
 <!-- FLOATING OVERALL PROGRESS -->
 <style>
 .etb-overall-float{position:fixed;top:3px;left:0;right:0;z-index:10002;background:rgba(255,255,255,.97);border-bottom:1px solid #dce3ea;box-shadow:0 1px 5px rgba(26,58,92,.12);font-family:Arial,sans-serif}
-.etb-overall-float-inner{max-width:740px;margin:0 auto;padding:7px 12px}
+.etb-overall-float-inner{position:relative;max-width:740px;margin:0 auto;padding:7px 12px}
 .etb-overall-float-meta{display:flex;align-items:center;gap:10px;font-size:12px;color:#5f7587;white-space:nowrap}
-.etb-overall-float-title{font-family:Arial,sans-serif;font-size:inherit;font-weight:700;color:#1a3a5c}.etb-homework-instructions-toggle{border:1px solid #cbdde6;border-radius:6px;background:#fff;color:#1a3a5c;padding:3px 8px;min-height:26px;font:700 11px/1.1 Arial,sans-serif;cursor:pointer;white-space:nowrap}
+.etb-overall-float-title{font-family:Arial,sans-serif;font-size:inherit;font-weight:700;color:#1a3a5c}.etb-homework-instructions-toggle{position:absolute;right:12px;bottom:1px;border:1px solid #cbdde6;border-radius:6px;background:#fff;color:#1a3a5c;padding:3px 8px;min-height:26px;font:700 11px/1.1 Arial,sans-serif;cursor:pointer;white-space:nowrap}
 .etb-overall-float-percent{font-size:16px;font-weight:800;color:#1a3a5c}
 .etb-overall-float-bar{height:6px;margin-top:4px;background:#e3ebef;border-radius:20px;overflow:hidden}
 .etb-overall-float-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#176b82,#299069);border-radius:inherit;transition:width .25s}
 body{padding-top:41px!important}
-@media(max-width:620px){.etb-overall-float-meta{gap:6px;font-size:10px}.etb-overall-float-inner{padding:6px 8px}.etb-overall-float-bar{height:5px}body{padding-top:37px!important}}
+@media(max-width:620px){.etb-overall-float-meta{gap:6px;font-size:10px}.etb-overall-float-inner{padding:6px 8px}.etb-overall-float-bar{height:5px}.etb-homework-instructions-toggle{right:8px;padding:3px 6px;font-size:10px}body{padding-top:37px!important}}
 </style>
-<div class="etb-overall-float" aria-label="Homework Progress"><div class="etb-overall-float-inner"><div class="etb-overall-float-meta"><span class="etb-overall-float-title">Homework Progress</span><span id="etb-overall-percent" class="etb-overall-float-percent">0%</span><button id="etb-homework-instructions-toggle" class="etb-homework-instructions-toggle" type="button" aria-expanded="false" aria-controls="etb-homework-instructions">Homework Instructions</button></div><div class="etb-overall-float-bar"><span id="etb-overall-fill"></span></div></div></div>
+<div class="etb-overall-float" aria-label="Homework Progress"><div class="etb-overall-float-inner"><div class="etb-overall-float-meta"><span class="etb-overall-float-title">Homework Progress</span><span id="etb-overall-percent" class="etb-overall-float-percent">0%</span></div><div class="etb-overall-float-bar"><span id="etb-overall-fill"></span></div><button id="etb-homework-instructions-toggle" class="etb-homework-instructions-toggle" type="button" aria-expanded="false" aria-controls="etb-homework-instructions">Homework Instructions</button></div></div>
 <script>(function(){var fill=document.getElementById("etb-overall-fill"),percent=document.getElementById("etb-overall-percent");function update(){var s={};try{s=JSON.parse(localStorage.getItem("pp:econ-150-ch17:1")||"{}")}catch(e){}var cs=s.concepts||{},ids=["c1","c2","c3","c4","c5"],pass={1:8,2:4,3:2},earned=0,total=0;ids.forEach(function(id){var c=cs[id]||{},correct=c.correct||{};[1,2,3].forEach(function(t){earned+=Math.min(Number(correct[t]||0),pass[t]);total+=pass[t]})});var pct=total?Math.round(earned/total*100):0;fill.style.width=pct+"%";percent.textContent=pct+"%"}update();window.addEventListener("storage",update);window.setInterval(update,1000)})();</script>
 <!-- /FLOATING OVERALL PROGRESS -->
 

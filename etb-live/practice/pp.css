@@ -217,10 +217,9 @@ legend { font-weight: 650; padding: 0 4px; }
 .pp-fig-cap { text-align: center; font-weight: 700; font-size: .95rem; color: #21313e; margin: 2px 0 -4px; }
 
 
-/* Concept Progress view */
-.pp-view-tabs { display: flex; gap: 6px; margin: 8px 0 12px; border-bottom: 1px solid var(--pp-line); }
-.pp-view-tabs button { flex: 1 1 0; min-height: 38px; padding: 8px 10px; border: 0; border-bottom: 3px solid transparent; border-radius: 8px 8px 0 0; background: transparent; color: var(--pp-muted); font-weight: 700; }
-.pp-view-tabs button[aria-selected="true"] { color: var(--pp-accent); border-bottom-color: var(--pp-accent); background: var(--pp-accent-soft); }
+/* Concept Progress control */
+.pp-tiers .pp-progress-toggle { flex: 1 1 140px; font-weight: 700; color: var(--pp-accent); border-color: var(--pp-accent); }
+.pp-tiers .pp-progress-toggle[aria-pressed="true"] { background: var(--pp-accent-soft); border: 2px solid #27718b; }
 .pp-concept-progress { padding-top: 2px; }
 .pp-progress-heading { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin-bottom: 12px; color: var(--pp-accent); }
 .pp-progress-heading span { color: var(--pp-muted); font-size: 13px; }
