@@ -203,9 +203,9 @@
       let h = '<div class="pp-panel">';
       h += '<div class="pp-eyebrow">Concept ' + esc(concept.number) + ' practice</div>';
       h += '<div class="pp-title">' + esc(concept.name) + "</div>";
-      const tierControls = '<div class="pp-tiers" role="group" aria-label="Practice level">' + tiers.map((t) =>
-        '<button type="button" data-tier="' + t + '" aria-pressed="' + (t === cs.tier) + '">' + '<span class="pp-tier-n">Tier ' + t + "</span>" + esc(TIER_LABELS[t]) + "</button>").join("") +
-        '<button type="button" class="pp-progress-toggle" data-view="' + (cs.view === "progress" ? "practice" : "progress") + '" aria-pressed="' + (cs.view === "progress") + '">' + (cs.view === "progress" ? "Practice" : "Concept Progress") + "</button></div>";
+      const tierControls = '<button type="button" class="pp-progress-toggle" data-view="' + (cs.view === "progress" ? "practice" : "progress") + '" aria-pressed="' + (cs.view === "progress") + '">' + (cs.view === "progress" ? "Practice" : "Concept Progress") + "</button>" +
+        '<div class="pp-tiers" role="group" aria-label="Practice level">' + tiers.map((t) =>
+        '<button type="button" data-tier="' + t + '" aria-pressed="' + (t === cs.tier) + '">' + '<span class="pp-tier-n">Tier ' + t + "</span>" + esc(TIER_LABELS[t]) + "</button>").join("") + "</div>";
       h += tierControls;
       if (cs.view === "progress") {
         h += '<section class="pp-concept-progress" aria-label="Concept progress"><div class="pp-progress-heading"><b>' + esc(concept.name) + '</b><span>Correct answers needed to move on</span></div>';

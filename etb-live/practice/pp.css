@@ -218,8 +218,8 @@ legend { font-weight: 650; padding: 0 4px; }
 
 
 /* Concept Progress control */
-.pp-tiers .pp-progress-toggle { flex: 1 1 140px; font-weight: 700; color: var(--pp-accent); border-color: var(--pp-accent); }
-.pp-tiers .pp-progress-toggle[aria-pressed="true"] { background: var(--pp-accent-soft); border: 2px solid #27718b; }
+.pp-progress-toggle { display: block; width: 100%; min-height: 30px; margin: 0 0 6px; padding: 5px 10px; font-weight: 700; line-height: 1.1; color: var(--pp-accent); border-color: var(--pp-accent); }
+.pp-progress-toggle[aria-pressed="true"] { background: var(--pp-accent-soft); border: 2px solid #27718b; }
 .pp-concept-progress { padding-top: 2px; }
 .pp-progress-heading { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin-bottom: 12px; color: var(--pp-accent); }
 .pp-progress-heading span { color: var(--pp-muted); font-size: 13px; }
