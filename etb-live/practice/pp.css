@@ -229,8 +229,3 @@ legend { font-weight: 650; padding: 0 4px; }
 .pp-concept-tier-bar { height: 10px; margin-top: 5px; border-radius: 99px; background: var(--pp-line); overflow: hidden; }
 .pp-concept-tier-bar span { display: block; height: 100%; border-radius: inherit; background: var(--pp-accent); }
 .pp-concept-tier-note { margin-top: 4px; color: var(--pp-muted); font-size: 13px; }
-
-/* Tier completion celebration */
-.pp-confetti{position:fixed;inset:0;z-index:10000;pointer-events:none;overflow:hidden}
-.pp-confetti span{position:absolute;top:42%;width:8px;height:13px;border-radius:1px;opacity:1;animation:pp-confetti-burst 1s cubic-bezier(.18,.8,.35,1) forwards}
-@keyframes pp-confetti-burst{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot))}}

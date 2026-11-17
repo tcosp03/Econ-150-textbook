@@ -178,25 +178,6 @@
       return { mix: false, activity: list.find((a) => a.id === pick) || list[0], list, ladder };
     }
 
-    function celebrateTier() {
-      const layer = document.createElement("div");
-      layer.className = "pp-confetti";
-      layer.setAttribute("aria-hidden", "true");
-      const colors = ["#78cfd0", "#2f8f62", "#17613e", "#f0b34d", "#d66b6b"];
-      for (let i = 0; i < 28; i++) {
-        const piece = document.createElement("span");
-        piece.style.left = (45 + Math.random() * 10) + "%";
-        piece.style.background = colors[i % colors.length];
-        piece.style.setProperty("--dx", ((Math.random() - 0.5) * 360) + "px");
-        piece.style.setProperty("--dy", (80 + Math.random() * 260) + "px");
-        piece.style.setProperty("--rot", ((Math.random() - 0.5) * 900) + "deg");
-        piece.style.animationDelay = (Math.random() * 120) + "ms";
-        layer.appendChild(piece);
-      }
-      document.body.appendChild(layer);
-      window.setTimeout(() => layer.remove(), 1300);
-    }
-
     function bindViewTabs() {
       rootEl.querySelectorAll("[data-view]").forEach((b) => (b.onclick = () => {
         cs.view = b.dataset.view;
@@ -280,9 +261,7 @@
           const correct = fields.correct === true;
           if (correct) {
             cs.correct = cs.correct || {};
-            const before = Number(cs.correct[activity.tier] || 0);
-            cs.correct[activity.tier] = before + 1;
-            if (before < (passes[activity.tier] || 0) && cs.correct[activity.tier] >= (passes[activity.tier] || 0)) celebrateTier();
+            cs.correct[activity.tier] = (cs.correct[activity.tier] || 0) + 1;
           }
           S.attempts = S.attempts || {};
           const n = S.attempts[unit.id] = (S.attempts[unit.id] || 0) + 1;
