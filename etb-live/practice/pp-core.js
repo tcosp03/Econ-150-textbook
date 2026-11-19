@@ -243,6 +243,20 @@
               cs.mixedCorrect[activity.tier] = (cs.mixedCorrect[activity.tier] || 0) + 1;
             }
           }
+          /* Pacini's Mini Panini ledger: every correct answer earns by tier;
+             every second incorrect answer creates one three-point penalty. */
+          S.panini = S.panini || { incorrectTotal: 0, gained: {}, lost: {} };
+          S.panini.gained = S.panini.gained || {};
+          S.panini.lost = S.panini.lost || {};
+          if (correct) {
+            const paniniValue = ({ 1: 1, 2: 2, 3: 3 })[activity.tier] || 0;
+            S.panini.gained[activity.tier] = (S.panini.gained[activity.tier] || 0) + paniniValue;
+          } else if (fields.correct === false) {
+            S.panini.incorrectTotal = Number(S.panini.incorrectTotal || 0) + 1;
+            if (S.panini.incorrectTotal % 2 === 0) {
+              S.panini.lost[activity.tier] = (S.panini.lost[activity.tier] || 0) + 3;
+            }
+          }
           S.attempts = S.attempts || {};
           const n = S.attempts[unit.id] = (S.attempts[unit.id] || 0) + 1;
           store.save();
