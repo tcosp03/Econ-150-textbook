@@ -178,14 +178,6 @@
       return { mix: false, activity: list.find((a) => a.id === pick) || list[0], list, ladder };
     }
 
-    function bindViewTabs() {
-      rootEl.querySelectorAll("[data-view]").forEach((b) => (b.onclick = () => {
-        cs.view = b.dataset.view;
-        store.save();
-        render();
-      }));
-    }
-
     function bindTierButtons() {
       rootEl.querySelectorAll("[data-tier]").forEach((b) => (b.onclick = () => {
         cs.tier = Number(b.dataset.tier);
@@ -203,25 +195,9 @@
       let h = '<div class="pp-panel">';
       h += '<div class="pp-eyebrow">Concept ' + esc(concept.number) + ' practice</div>';
       h += '<div class="pp-title">' + esc(concept.name) + "</div>";
-      const tierControls = '<button type="button" class="pp-progress-toggle" data-view="' + (cs.view === "progress" ? "practice" : "progress") + '" aria-pressed="' + (cs.view === "progress") + '">' + (cs.view === "progress" ? "Practice" : "Concept Progress") + "</button>" +
-        '<div class="pp-tiers" role="group" aria-label="Practice level">' + tiers.map((t) =>
+      const tierControls = '<div class="pp-tiers" role="group" aria-label="Practice level">' + tiers.map((t) =>
         '<button type="button" data-tier="' + t + '" aria-pressed="' + (t === cs.tier) + '">' + '<span class="pp-tier-n">Tier ' + t + "</span>" + esc(TIER_LABELS[t]) + "</button>").join("") + "</div>";
       h += tierControls;
-      if (cs.view === "progress") {
-        h += '<section class="pp-concept-progress" aria-label="Concept progress"><div class="pp-progress-heading"><b>' + esc(concept.name) + '</b><span>Correct answers needed to move on</span></div>';
-        h += tiers.map((t) => {
-          const correct = Number(cs.correct[t] || 0);
-          const goal = goals[t] || 0;
-          const need = passes[t] || 0;
-          const pct = goal ? Math.min(100, Math.round((correct / goal) * 100)) : 0;
-          return '<div class="pp-concept-tier"><div class="pp-concept-tier-head"><b>Tier ' + t + '</b><span>' + Math.min(correct, goal) + '/' + goal + ' correct</span></div><div class="pp-concept-tier-bar"><span style="width:' + pct + '%"></span></div><div class="pp-concept-tier-note">' + (correct >= need ? 'Requirement met: ' + need + '/' + goal + ' needed' : 'Need ' + need + '/' + goal + ' to move on') + '</div></div>';
-        }).join("");
-        h += '</section></div>';
-        rootEl.innerHTML = h;
-        bindViewTabs();
-        bindTierButtons();
-        return;
-      }
       if (list.length > 1) {
         h += '<div class="pp-controls"><label for="pp-style">Practice style</label><select id="pp-style">' +
           (ladder ? "" : '<option value="mix"' + (pick === "mix" ? " selected" : "") + ">Mix it up</option>") +
@@ -234,8 +210,6 @@
         Math.min(done, goal) + " / " + goal + " suggested. " + (done >= goal ? "Move on when you feel ready." : "A guide, not a grade.") + "</div></div>";
       h += '<div id="pp-activity" aria-live="polite"></div></div>';
       rootEl.innerHTML = h;
-      bindViewTabs();
-
       bindTierButtons();
       const sel = rootEl.querySelector("#pp-style");
       if (sel) sel.onchange = () => { cs.style[cs.tier] = sel.value; store.save(); render(); };
