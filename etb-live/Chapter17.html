@@ -253,22 +253,22 @@ body{padding-top:41px!important}
 .etb-panini-toggle:hover{background:#8f382d;color:#fff}
 .etb-panini-overlay{display:none;position:fixed;inset:0;z-index:10020;background:rgba(36,23,16,.42);align-items:flex-start;justify-content:flex-end;padding:76px 14px 20px;font-family:Georgia,"Times New Roman",serif}
 .etb-panini-overlay.open{display:flex}
-.etb-panini-card{width:min(340px,calc(100vw - 28px));max-height:calc(100vh - 96px);overflow:auto;background:#fff8e8;color:#3d241a;border:3px solid #8f382d;border-radius:8px;box-shadow:0 14px 40px rgba(39,24,16,.35)}
-.etb-panini-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:repeating-linear-gradient(135deg,#f0d6a1 0 12px,#f8e8c7 12px 24px);border-bottom:2px solid #8f382d}
-.etb-panini-header h2{margin:0;color:#6e2d24;font-size:22px;line-height:1.1}
-.etb-panini-close{border:0;background:transparent;color:#6e2d24;font-size:25px;line-height:1;cursor:pointer}
-.etb-panini-body{padding:14px 16px 18px}
-.etb-panini-directions{margin:0 0 14px;padding:11px 13px;background:#fffdf5;border:1px solid #d9b978;border-left:5px solid #2f7547;border-radius:5px;font-size:14px;line-height:1.5}
-.etb-panini-total{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 14px;padding:12px 14px;background:#f4ead3;border:2px solid #c99d55;border-radius:6px}
-.etb-panini-total-label{font-size:16px;font-weight:700;color:#6e2d24}
-.etb-panini-total-value{font-size:31px;font-weight:700;color:#2f7547}
-.etb-panini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.etb-panini-tier{background:#fffdf7;border:1px solid #d9b978;border-radius:6px;padding:10px 12px}
-.etb-panini-tier h3{margin:0 0 7px;color:#6e2d24;font-size:16px}
-.etb-panini-stat{display:flex;justify-content:space-between;gap:8px;font-size:13px;line-height:1.5}
+.etb-panini-card{width:min(320px,calc(100vw - 28px));max-height:none;overflow:visible;background:#fff8e8;color:#3d241a;border:2px solid #8f382d;border-radius:7px;box-shadow:0 10px 28px rgba(39,24,16,.3)}
+.etb-panini-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:repeating-linear-gradient(135deg,#f0d6a1 0 12px,#f8e8c7 12px 24px);border-bottom:2px solid #8f382d}
+.etb-panini-header h2{margin:0;color:#6e2d24;font-size:17px;line-height:1.1}
+.etb-panini-close{border:0;background:transparent;color:#6e2d24;font-size:21px;line-height:1;cursor:pointer}
+.etb-panini-body{padding:8px 10px 10px}
+.etb-panini-directions{margin:0 0 8px;padding:7px 8px;background:#fffdf5;border:1px solid #d9b978;border-left:4px solid #2f7547;border-radius:4px;font-size:11px;line-height:1.25}
+.etb-panini-total{display:flex;align-items:baseline;justify-content:space-between;gap:7px;margin:0 0 8px;padding:7px 9px;background:#f4ead3;border:2px solid #c99d55;border-radius:6px}
+.etb-panini-total-label{font-size:13px;font-weight:700;color:#6e2d24}
+.etb-panini-total-value{font-size:24px;font-weight:700;color:#2f7547}
+.etb-panini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.etb-panini-tier{background:#fffdf7;border:1px solid #d9b978;border-radius:4px;padding:6px 8px}
+.etb-panini-tier h3{margin:0 0 4px;color:#6e2d24;font-size:13px}
+.etb-panini-stat{display:flex;justify-content:space-between;gap:6px;font-size:11px;line-height:1.25}
 .etb-panini-gain{color:#2f7547;font-weight:700}.etb-panini-loss{color:#ad332d;font-weight:700}
-.etb-panini-arrow{font-size:17px;font-weight:700;margin-right:4px}
-@media(max-width:620px){.etb-panini-toggle{right:62px;top:50%!important;max-width:125px;overflow:hidden;text-overflow:ellipsis;font-size:9px;padding:3px 5px}.etb-panini-header h2{font-size:19px}.etb-panini-grid{grid-template-columns:1fr}.etb-panini-overlay{justify-content:flex-end;padding:68px 10px 14px}.etb-panini-card{width:min(320px,calc(100vw - 20px));max-height:calc(100vh - 82px)}}
+.etb-panini-arrow{font-size:14px;font-weight:700;margin-right:4px}
+@media(max-width:620px){.etb-panini-toggle{right:62px;top:50%!important;max-width:125px;overflow:hidden;text-overflow:ellipsis;font-size:9px;padding:3px 5px}.etb-panini-header h2{font-size:19px}.etb-panini-grid{grid-template-columns:1fr}.etb-panini-overlay{justify-content:flex-end;padding:68px 10px 14px}.etb-panini-card{width:min(300px,calc(100vw - 20px));max-height:none}}
 </style>
 <div id="etb-panini-overlay" class="etb-panini-overlay" role="dialog" aria-modal="true" aria-labelledby="etb-panini-title">
   <section class="etb-panini-card">
