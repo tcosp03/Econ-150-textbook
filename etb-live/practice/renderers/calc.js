@@ -107,7 +107,7 @@
         if (st.stage > 0 && !allOk) h += '<button type="button" class="pp-primary" id="pp-all">' + (checked ? "Recheck" : "Check all") + "</button>";
         if (checked) {
           const last = st.stage === prog.length - 1;
-          h += '<button type="button" class="' + (allOk ? "pp-primary" : "") + '" id="pp-next">' + (last ? "New set of " + prog[st.stage] : "Continue to " + prog[st.stage + 1] + " problems") + "</button>";
+          h += '<button type="button" class="' + (allOk ? "pp-primary" : "") + '" id="pp-next">Next Question</button>';
         }
         h += "</div>";
         host.innerHTML = h;

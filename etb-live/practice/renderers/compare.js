@@ -48,7 +48,7 @@
           const ok = st.last === it.answer;
           h += '<div class="pp-feedback' + (ok ? "" : " pp-bad") + '" role="status"><b>' +
             (ok ? "Correct." : "Not quite.") + "</b> " + esc(it.why) + "</div>";
-          if (!ok) h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-next">Next comparison</button></div>';
+          if (st.last != null) h += '<div class="pp-actions"><button type="button" class="pp-primary" id="pp-next">Next Question</button></div>';
         }
         host.innerHTML = h;
         host.querySelectorAll("[data-cmp]").forEach((b) => (b.onclick = () => answer(Number(b.dataset.cmp))));
@@ -64,7 +64,6 @@
           misc:[it.option_misconceptions && it.option_misconceptions[i]], extra:{pos_in_round:st.pos} });
         if (ok) st.right++; else st.missed.push(st.round[st.pos]);
         ctx.count(); ctx.save(); draw();
-        if (ok) advanceTimer = setTimeout(advance, 850);
       }
 
       function summary() {

@@ -69,14 +69,6 @@
               misc: [it.option_misconceptions && it.option_misconceptions[st.picked]]
             });
             ctx.count(); ctx.save(); draw();
-            if (st.picked === it.answer) {
-              const itemIndex = st.cur;
-              advanceTimer = setTimeout(() => {
-                if (st.cur !== itemIndex || !st.checked) return;
-                newItem();
-                if (!ctx.roundDone()) draw();
-              }, 850);
-            }
             return;
           }
           newItem();

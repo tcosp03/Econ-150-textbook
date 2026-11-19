@@ -174,7 +174,22 @@
          first step instead of "Mix it up", and number the steps in the picker. */
       const ladder = (concept.ladder || []).includes(cs.tier);
       const pick = cs.style[cs.tier] || (list.length > 1 && !ladder ? "mix" : list[0].id);
-      if (pick === "mix") return { mix: true, activity: list[(cs.mixTurn[cs.tier] || 0) % list.length], list, ladder };
+      if (pick === "mix") {
+        cs.mixQueue = cs.mixQueue || {};
+        cs.mixLast = cs.mixLast || {};
+        const ids = list.map((a) => a.id);
+        let queue = (cs.mixQueue[cs.tier] || []).filter((id) => ids.includes(id));
+        const last = cs.mixLast[cs.tier];
+        if (!queue.length) {
+          queue = shuffle(ids.filter((id) => ids.length === 1 || id !== last));
+          if (!queue.length) queue = ids.slice();
+        }
+        const chosenId = queue.shift();
+        cs.mixQueue[cs.tier] = queue;
+        cs.mixLast[cs.tier] = chosenId;
+        store.save();
+        return { mix: true, activity: list.find((a) => a.id === chosenId) || list[0], list, ladder };
+      }
       return { mix: false, activity: list.find((a) => a.id === pick) || list[0], list, ladder };
     }
 

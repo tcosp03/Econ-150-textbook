@@ -2,9 +2,8 @@
  * activity: {labels:[2 to 4 short answers], items:[{id, prompt, answer:index, why, label_misconceptions?}], round_size}
  * Two labels: Left/Right (or A/D). Three: Left/Down/Right (or A/S/D).
  * Four: Up/Down/Left/Right (or W/S/A/D), shown in a compass layout.
- * Immediate feedback. A correct answer advances automatically. A wrong answer
- * stays on screen with its explanation until the student continues: Next, Enter,
- * or any answer key. No timer and no speed pressure. A round ends with a review.
+ * Immediate feedback. Every answer stays on screen until the student clicks
+ * Next Question. No timer and no speed pressure. A round ends with a review.
  * The finished round offers Review all beside New round: every item from the
  * round, in the order answered, with its answer and explanation, missed ones in
  * red and correct ones in green. It stays hidden until asked for, the same way
@@ -31,14 +30,8 @@
       const size = Math.min(activity.round_size || 8, activity.items.length);
       let timer = null, byKey = false, reviewing = false;
       if (!st.round || st.done || st.round.some((k) => k >= activity.items.length)) newRound();
-      // Coming back mid-feedback: a correct answer moves on as it would have; a
-      // missed one stays, so the explanation is still there to read.
-      if (st.last != null && st.last === activity.items[st.round[st.pos]].answer) {
-        st.last = null; st.pos++; if (st.pos >= st.round.length) st.done = true;
-      }
-
       function waiting() {
-        return !st.done && st.last != null && st.last !== activity.items[st.round[st.pos]].answer;
+        return !st.done && st.last != null;
       }
 
       function advance() {
@@ -71,7 +64,7 @@
           const ok = st.last === it.answer;
           h += '<div class="pp-feedback' + (ok ? "" : " pp-bad") + '" role="status"><b>' + (ok ? "Correct." : "Not quite.") + "</b> " + esc(it.why) + "</div>";
           // The Enter hint only for students already on a keyboard; on a phone it's noise.
-          if (!ok) h += '<div class="pp-actions" style="align-items:center"><button type="button" class="pp-primary" id="pp-next">Next</button>' +
+          h += '<div class="pp-actions" style="align-items:center"><button type="button" class="pp-primary" id="pp-next">Next Question</button>' +
             (byKey ? '<span class="pp-tiny pp-muted">or press Enter</span>' : "") + "</div>";
         } else h += '<p class="pp-tiny pp-muted">' + (four ? "Use an arrow key or tap a choice." : "Use the keys or tap an answer.") + "</p>";
         host.innerHTML = h;
@@ -93,7 +86,6 @@
         });
         if (ok) st.right++; else st.missed.push(st.round[st.pos]);
         ctx.count(); ctx.save(); draw();
-        if (ok) timer = setTimeout(advance, 1050);
       }
 
       function summary() {
@@ -135,11 +127,7 @@
         if (["INPUT", "TEXTAREA", "SELECT"].includes(tag)) return;
         const k = e.key.toLowerCase();
         const idx = keys.findIndex((pair) => pair.includes(k));
-        if (waiting()) {
-          // Enter or an answer key only moves on; it never answers the next item.
-          if (k !== "enter" && idx < 0) return;
-          e.preventDefault(); advance(); return;
-        }
+        if (waiting()) return;
         if (idx < 0 || st.done) return;
         e.preventDefault();
         byKey = true;
