@@ -262,6 +262,12 @@
           if (correct) {
             cs.correct = cs.correct || {};
             cs.correct[activity.tier] = (cs.correct[activity.tier] || 0) + 1;
+            /* Tier mastery is earned only in Mix It Up; keep it separate from
+               ordinary practice accuracy so selected-tier work cannot master a tier. */
+            if (mix) {
+              cs.mixedCorrect = cs.mixedCorrect || {};
+              cs.mixedCorrect[activity.tier] = (cs.mixedCorrect[activity.tier] || 0) + 1;
+            }
           }
           S.attempts = S.attempts || {};
           const n = S.attempts[unit.id] = (S.attempts[unit.id] || 0) + 1;

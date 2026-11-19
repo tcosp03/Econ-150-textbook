@@ -84,11 +84,14 @@ function loadBank(spec){
  return bankCache[spec.id];
 }
 function tiersFor(c){return[1,2,3].filter(function(t){return(c.activities||[]).some(function(a){return Number(a.tier)===t})})}
-function tier(cs,t){var c=Number(cs&&cs.correct&&cs.correct[t]||0);return{correct:c,goal:goals[t],pass:pass[t],pct:Math.min(100,Math.round(c/goals[t]*100)),complete:c>=pass[t]}}
+function tier(cs,t){var c=Number(cs&&cs.mixedCorrect&&cs.mixedCorrect[t]||0);return{correct:c,goal:goals[t],pass:pass[t],pct:Math.min(100,Math.round(c/goals[t]*100)),complete:c>=pass[t]}}
 function conceptProgress(spec,c){
- var S=read(spec.storageKey||("pp:"+spec.id+":1")),cs=S.concepts&&S.concepts[c.id]||{},ts=tiersFor(c),earned=0,total=0;
- ts.forEach(function(t){var x=tier(cs,t);earned+=Math.min(x.correct,x.pass);total+=x.pass});
- return{pct:total?Math.round(earned/total*100):0,tiers:ts};
+ var S=read(spec.storageKey||("pp:"+spec.id+":1")),cs=S.concepts&&S.concepts[c.id]||{},ts=tiersFor(c);
+ /* Overall mastery is intentionally restricted to Tier 3 (exam-level)
+    performance; one correct Tier 3 answer moves the mastery percentage. */
+ if(!ts.includes(3))return{pct:0,tiers:ts,hasMastery:false,correct:0,goal:0};
+ var goal=goals[3],correct=Math.min(Number(cs.correct&&cs.correct[3]||0),goal);
+ return{pct:Math.round(correct/goal*100),tiers:ts,hasMastery:true,correct:correct,goal:goal};
 }
 function detailCard(spec,c){
  var S=read(spec.storageKey||("pp:"+spec.id+":1")),cs=S.concepts&&S.concepts[c.id]||{},ts=tiersFor(c),d=ts.map(function(t){return tier(cs,t)}),all=d.length>0&&d.every(function(x){return x.complete});
@@ -96,11 +99,11 @@ function detailCard(spec,c){
 }
 function chapterSummary(spec,bank,showConcepts){
  var concepts=bank.concepts||[],total=0,earned=0;
- concepts.forEach(function(c){var q=conceptProgress(spec,c);earned+=q.pct;total+=100});
+ concepts.forEach(function(c){var q=conceptProgress(spec,c);if(q.hasMastery){earned+=q.pct;total+=100}});
  var pct=concepts.length?Math.round(earned/total*100):0;
  var html='<article class="summary-chapter '+(pct>=100?"complete":"")+'"><div class="summary-head"><h3>'+esc(spec.label)+'</h3><span class="summary-percent">'+pct+'% complete</span></div><div class="summary-bar"><span style="width:'+pct+'%"></span></div>';
  if(showConcepts){
-  html+='<div class="concept-summary-list">'+concepts.map(function(c){var q=conceptProgress(spec,c);return'<div class="concept-summary '+(q.pct>=100?"complete":"")+'"><div class="concept-summary-name"><span>'+esc(c.name)+'</span><span>'+q.pct+'%</span></div><div class="summary-bar"><span style="width:'+q.pct+'%"></span></div></div>'}).join("")+'</div>';
+  html+='<div class="concept-summary-list">'+concepts.map(function(c){var q=conceptProgress(spec,c),label=q.hasMastery?q.pct+"%":"—",width=q.hasMastery?q.pct:0;return'<div class="concept-summary '+(q.hasMastery&&q.pct>=100?"complete":"")+'"><div class="concept-summary-name"><span>'+esc(c.name)+'</span><span>'+label+'</span></div><div class="summary-bar"><span style="width:'+width+'%"></span></div></div>'}).join("")+'</div>';
  }
  return{pct:pct,html:html+'</article>'};
 }
