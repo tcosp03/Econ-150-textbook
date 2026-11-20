@@ -170,6 +170,19 @@
 .card.beyond-card{background:#efe9fb}
 .chip.airforce-blue{background:#00308f}
 .card.exam:not(.quiz-card){background:#e7efff}
+</style><style>
+/* Quiz is red; Concept Practice uses the former darker Quiz Tiffany treatment. */
+.card.quiz-card{background:#fff0f2}
+.card.quiz-card .chip.red{background:#b13c55}
+.practice-card{background:#dff3f2}
+.practice-card .chip.light-blue{background:#087f80}
+.practice-tiers button.active{
+  background:#cceeed;
+  border-color:#087f80;
+  color:#065f60;
+}
+.practice-card .mini-bar.complete span,
+.practice-card .mini-bar span{background:#087f80}
 </style></head><body><div class="wrap">
 <header class="top"><div class="eyebrow">Continuity Prototypes · 2</div><h1>Semantic consolidation</h1><p class="lead">A smaller vocabulary of component families with meaningful variants.</p></header>
 <nav class="nav"><a href="#ribbons">Ribbons</a><a href="#cards">Cards</a><a href="#concept-banks">Question banks</a><a href="#views">Tabs</a><a href="#visuals">Tables & visuals</a><a href="#progress">Progress</a><a href="#cp-dashboard">Dashboard</a></nav>
@@ -187,7 +200,7 @@
 <article class="card beyond-card"><span class="chip dark-purple">Beyond the Textbook</span><h3>Optional connections</h3><p>Current events, policy debates, additional examples, and related material outside the textbook.</p></article>
 <article class="card practice"><span class="chip dark-turquoise">Vocabulary Flashcards</span><h3>Chapter vocabulary</h3><p>Infinite practice for important terms, available within the chapter or unit pages.</p><div class="flashcards"><span class="term">Externality</span><span class="term">Private cost</span><span class="term">Social cost</span></div></article>
 <article class="card exam"><span class="chip airforce-blue">On the Exam</span><h3>Exam connection</h3><p>Unlocks after the quiz and identifies how the concept may appear on an exam or quiz.</p><details class="disclosure"><summary>View exam connection</summary><div class="answer">Distinguish private cost from social cost and identify the efficient quantity.</div></details></article>
-<article class="card quiz-card"><span class="chip blue">Quiz</span><h3>Readiness quiz</h3><p>Complete five Tier 3 questions in a row to demonstrate exam-level readiness.</p><details class="disclosure"><summary>View quiz requirements</summary><div class="answer">Five consecutive Tier 3 questions correct unlocks the next assessment step.</div></details></article>
+<article class="card quiz-card"><span class="chip red">Quiz</span><h3>Readiness quiz</h3><p>Complete five Tier 3 questions in a row to demonstrate exam-level readiness.</p><details class="disclosure"><summary>View quiz requirements</summary><div class="answer">Five consecutive Tier 3 questions correct unlocks the next assessment step.</div></details></article>
 <article class="card neutral"><span class="chip gray">Market Thesis</span><h3>Markets and external costs</h3><p>When prices omit important costs or benefits, the market outcome may not maximize total surplus.</p></article>
 
 </div></section>
