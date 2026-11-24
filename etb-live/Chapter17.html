@@ -612,7 +612,7 @@ body.ch17-view-focus .etb-overall-float{display:none!important}
   function setupChapterViews(){
     var practiceView=document.getElementById("chapter17-practice-view");
     var resourcesView=document.getElementById("chapter17-resources-view");
-    var practiceNodes=Array.prototype.slice.call(document.querySelectorAll(".pp-panel,.pp-ready,.etb-exam,.etb-retrieval,.etb-misc"));
+    var practiceNodes=Array.prototype.slice.call(document.querySelectorAll(".pp-panel,.pp-ready,#pp-frq-wrap"));var practicePanels=Array.prototype.slice.call(document.querySelectorAll(".pp-panel"));var practicePanelStates=practicePanels.map(function(n){return n.open});
     var resourceNodes=Array.prototype.slice.call(document.querySelectorAll(".etb-worked,.etb-learnmore,.etb-note,.etb-rof,.etb-research")).filter(function(n){return !n.closest(".etb-exam,.pp-panel,.pp-ready")});
     function createPlaceholders(nodes,kind){
       nodes.forEach(function(node){
@@ -635,7 +635,7 @@ body.ch17-view-focus .etb-overall-float{display:none!important}
       nodes.forEach(function(node){target.appendChild(node)});
     }
     function setView(view){
-      restore(practiceNodes);restore(resourceNodes);
+      restore(practiceNodes);restore(resourceNodes);practicePanels.forEach(function(n,i){n.open=view==="practice"?true:practicePanelStates[i]});
       document.body.classList.remove("ch17-view-textbook","ch17-view-practice","ch17-view-resources","ch17-view-focus");
       document.body.classList.add("ch17-view-"+view);
       document.body.setAttribute("data-ch17-view",view);
@@ -654,5 +654,18 @@ body.ch17-view-focus .etb-overall-float{display:none!important}
 </script><style>
 body.ch17-view-focus [data-ch17-practice],
 body.ch17-view-focus [data-ch17-resource]{display:none!important}
+</style><style>
+/* Practice view refinements */
+body.ch17-view-practice .pp-panel{display:block!important}
+body.ch17-view-practice .pp-panel .pp-toggle{display:none!important}
+body.ch17-view-practice .pp-panel summary{pointer-events:none!important;cursor:default!important}
+body.ch17-view-practice .pp-panel .pp-frame,
+body.ch17-view-practice .pp-panel .pp-own{display:block!important}
+body.ch17-view-practice .pp-ready{width:100%!important;grid-column:1/-1!important}
+body.ch17-view-practice .pp-ready .pp-frame{width:100%!important;min-height:760px!important}
+body.ch17-view-practice #pp-frq-wrap{width:100%!important}
+body.ch17-view-focus .etb-exam,
+body.ch17-view-focus .etb-retrieval,
+body.ch17-view-focus .etb-misc{display:none!important}
 </style></body>
 </html>
