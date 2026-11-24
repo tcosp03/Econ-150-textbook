@@ -369,9 +369,9 @@ body{background:var(--exp-bg)!important;padding-top:64px!important}
  body{padding-top:0!important}
 }
 </style>
-<div class="chapter17-topbar"><div class="chapter17-brand">THE JOY OF ECONOMICS</div><nav><button class="chapter17-menu-toggle" type="button" aria-label="Open chapter navigation" aria-expanded="false"><span></span><span></span><span></span></button><a href="index.html">Textbook</a><a href="#pp-ready">Practice</a><a href="#etb-learnmore">Resources</a></nav></div>
+<div class="chapter17-topbar"><div class="chapter17-brand">THE JOY OF ECONOMICS</div><nav><button class="chapter17-menu-toggle" type="button" aria-label="Open chapter navigation" aria-expanded="false"><span></span><span></span><span></span></button><a href="index.html">Textbook</a><a href="#pp-ready">Practice</a><a href="#etb-learnmore">Resources</a><button class="chapter17-right-toggle chapter17-resources-toggle" type="button" aria-label="Close right sidebar" aria-expanded="true"><span class="chapter17-right-icon"><i></i></span></button></nav></div>
 <aside class="chapter17-sidebar" aria-label="Chapter navigation"><h2>Chapter 17</h2><h3>Market Failures I:<br>Externalities</h3><p class="sidebar-label">In this chapter</p><ul><li><a href="#chapter17-concept-1" data-chapter-target="0">17.1 Externalities</a></li><li><a href="#chapter17-concept-2" data-chapter-target="1">17.2 Private and social cost</a></li><li><a href="#chapter17-concept-3" data-chapter-target="2">17.3 Negative externalities</a></li><li><a href="#chapter17-concept-4" data-chapter-target="3">17.4 Positive externalities</a></li><li><a href="#chapter17-concept-5" data-chapter-target="4">17.5 Measuring deadweight loss</a></li><li><a href="#pp-ready">Chapter practice</a></li></ul><p class="sidebar-label">More chapters</p><ul><li><a href="Chapter16.html">16. Consumer choice</a></li><li><a href="Chapter18.html">18. Shared resources</a></li></ul><hr class="sidebar-rule"><p class="sidebar-note">Navigation stays alongside the lesson so you can move through the chapter without losing your place.</p></aside>
-<aside class="chapter17-right-rail" aria-label="Alongside the lesson"><div class="chapter17-right-head"><h2>Alongside the lesson</h2><button class="chapter17-right-toggle" type="button" aria-label="Close right sidebar" aria-expanded="true"><span class="chapter17-right-icon"><i></i></span></button></div><div class="chapter17-progress-slot"></div><div class="chapter17-rail-card"><h3>Watch · 3 min</h3><p>A short visual explanation of externalities and hidden third-party costs.</p><p style="margin-top:10px"><a href="#etb-learnmore">Open learning resources →</a></p></div><div class="chapter17-rail-card"><h3>Remember</h3><p>Private cost is not social cost. Social cost includes the effects on third parties.</p></div><div class="chapter17-rail-card"><h3>Everyday example</h3><p>If a factory pollutes a river, who bears the cost when the factory does not pay for the damage?</p></div></aside>
+<aside class="chapter17-right-rail" aria-label="Alongside the lesson"><div class="chapter17-right-head"><h2>Alongside the lesson</h2></div><div class="chapter17-progress-slot"></div><div class="chapter17-rail-card"><h3>Watch · 3 min</h3><p>A short visual explanation of externalities and hidden third-party costs.</p><p style="margin-top:10px"><a href="#etb-learnmore">Open learning resources →</a></p></div><div class="chapter17-rail-card"><h3>Remember</h3><p>Private cost is not social cost. Social cost includes the effects on third parties.</p></div><div class="chapter17-rail-card"><h3>Everyday example</h3><p>If a factory pollutes a river, who bears the cost when the factory does not pay for the damage?</p></div></aside>
 <script>
 (function(){
   function setupChapter17Layout(){
@@ -437,7 +437,7 @@ body{overflow-x:hidden}
 .chapter17-right-toggle{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;padding:5px;border:1px solid #d5e1e4;border-radius:5px;background:#fff;cursor:pointer}
 .chapter17-right-toggle:hover{background:#eef6f5}
 .chapter17-right-icon{position:relative;display:block;width:18px;height:14px;border:2px solid #263d4a;border-radius:1px}
-.chapter17-right-icon i{position:absolute;left:-2px;top:-2px;display:block;width:5px;height:14px;background:#263d4a;border:0}
+.chapter17-right-icon i{position:absolute;right:-2px;top:-2px;display:block;width:5px;height:14px;background:#263d4a;border:0}
 body:not(.chapter17-right-rail-open) .chapter17-right-rail{transform:translateX(100%);visibility:hidden}
 body.chapter17-right-rail-open .etb{margin-right:calc(300px + (100vw - 300px - 760px)/2)!important;margin-left:calc((100vw - 300px - 760px)/2)!important}
 body.chapter17-sidebar-open.chapter17-right-rail-open .etb{margin-left:calc(250px + (100vw - 250px - 300px - 760px)/2)!important;margin-right:calc(300px + (100vw - 250px - 300px - 760px)/2)!important}
@@ -470,5 +470,7 @@ body.chapter17-sidebar-open:not(.chapter17-right-rail-open) .etb{margin-left:cal
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",setupRightRailToggle);else setupRightRailToggle();
 })();
-</script></body>
+</script><style>
+.chapter17-resources-toggle{margin-left:-16px}
+</style></body>
 </html>
