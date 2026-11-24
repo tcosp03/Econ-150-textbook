@@ -537,5 +537,21 @@ body.chapter17-sidebar-open:not(.chapter17-right-rail-open) .etb{margin-left:cal
     margin-right:274px!important;
   }
 }
+</style><style>
+/* Equal inner margins keep reading text fully inside the center column. */
+.etb{
+  box-sizing:border-box!important;
+  padding-left:36px!important;
+  padding-right:36px!important;
+  overflow-x:hidden!important;
+}
+.etb .etb-body,
+.etb .etb-hook,
+.etb .etb-concept,
+.etb .etb-title-card{
+  max-width:100%!important;
+  overflow-wrap:anywhere!important;
+}
+.etb .etb-body p,.etb .etb-hook p{max-width:100%!important}
 </style></body>
 </html>
