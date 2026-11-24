@@ -472,5 +472,31 @@ body.chapter17-sidebar-open:not(.chapter17-right-rail-open) .etb{margin-left:cal
 })();
 </script><style>
 .chapter17-resources-toggle{margin-left:-16px}
+</style><style>
+/* Prevent either fixed sidebar from covering the reading column. */
+.etb{position:relative;z-index:1}
+@media(min-width:821px){
+ body.chapter17-sidebar-open .etb{
+   width:min(760px,calc(100vw - 250px - 300px - 48px))!important;
+   max-width:none!important;
+   margin-left:274px!important;
+   margin-right:324px!important;
+ }
+ body.chapter17-sidebar-open:not(.chapter17-right-rail-open) .etb{
+   margin-left:274px!important;
+   margin-right:24px!important;
+ }
+}
+@media(max-width:1180px) and (min-width:821px){
+ body.chapter17-sidebar-open .etb{
+   width:min(760px,calc(100vw - 215px - 250px - 48px))!important;
+   margin-left:239px!important;
+   margin-right:274px!important;
+ }
+ body.chapter17-sidebar-open:not(.chapter17-right-rail-open) .etb{
+   margin-left:239px!important;
+   margin-right:24px!important;
+ }
+}
 </style></body>
 </html>
