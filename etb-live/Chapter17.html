@@ -498,5 +498,44 @@ body.chapter17-sidebar-open:not(.chapter17-right-rail-open) .etb{margin-left:cal
    margin-right:24px!important;
  }
 }
+</style><style>
+/* Final three-column sizing: equal breathing room and no clipped reading text. */
+@media(min-width:821px){
+  body.chapter17-sidebar-open.chapter17-right-rail-open .etb{
+    width:min(760px,calc(100vw - 250px - 300px - 48px))!important;
+    max-width:none!important;
+    margin-left:calc(250px + max(24px,calc((100vw - 1310px)/2)))!important;
+    margin-right:calc(300px + max(24px,calc((100vw - 1310px)/2)))!important;
+  }
+  body.chapter17-sidebar-open:not(.chapter17-right-rail-open) .etb{
+    width:min(760px,calc(100vw - 250px - 48px))!important;
+    max-width:none!important;
+    margin-left:calc(250px + max(24px,calc((100vw - 1010px)/2)))!important;
+    margin-right:max(24px,calc((100vw - 1010px)/2))!important;
+  }
+  body:not(.chapter17-sidebar-open).chapter17-right-rail-open .etb{
+    width:min(760px,calc(100vw - 300px - 48px))!important;
+    max-width:none!important;
+    margin-left:max(24px,calc((100vw - 1060px)/2))!important;
+    margin-right:calc(300px + max(24px,calc((100vw - 1060px)/2)))!important;
+  }
+}
+@media(max-width:1180px) and (min-width:821px){
+  body.chapter17-sidebar-open.chapter17-right-rail-open .etb{
+    width:min(760px,calc(100vw - 215px - 250px - 48px))!important;
+    margin-left:239px!important;
+    margin-right:274px!important;
+  }
+  body.chapter17-sidebar-open:not(.chapter17-right-rail-open) .etb{
+    width:min(760px,calc(100vw - 215px - 48px))!important;
+    margin-left:239px!important;
+    margin-right:24px!important;
+  }
+  body:not(.chapter17-sidebar-open).chapter17-right-rail-open .etb{
+    width:min(760px,calc(100vw - 250px - 48px))!important;
+    margin-left:24px!important;
+    margin-right:274px!important;
+  }
+}
 </style></body>
 </html>
