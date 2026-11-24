@@ -229,3 +229,45 @@ legend { font-weight: 650; padding: 0 4px; }
 .pp-concept-tier-bar { height: 10px; margin-top: 5px; border-radius: 99px; background: var(--pp-line); overflow: hidden; }
 .pp-concept-tier-bar span { display: block; height: 100%; border-radius: inherit; background: var(--pp-accent); }
 .pp-concept-tier-note { margin-top: 4px; color: var(--pp-muted); font-size: 13px; }
+
+
+/* Experimental Chapter 17 practice sizing:
+   keep the card width, but scale oversized visuals so the complete item remains visible. */
+.pp-figure svg{
+  width:auto!important;
+  max-width:100%!important;
+  height:clamp(190px,34vh,360px)!important;
+  max-height:360px!important;
+  margin:0 auto!important;
+}
+.pp-figure{
+  overflow:hidden;
+}
+.pp-figure img,
+.pp-card img,
+.pp-card video,
+.pp-card canvas{
+  display:block;
+  max-width:100%!important;
+  max-height:360px!important;
+  width:auto!important;
+  height:auto!important;
+  object-fit:contain;
+  margin-left:auto;
+  margin-right:auto;
+}
+.pp-card table,
+.pp-card .pp-table,
+.pp-card [role="table"]{
+  max-width:100%!important;
+  font-size:clamp(11px,1.35vw,14px)!important;
+  line-height:1.25!important;
+  table-layout:fixed;
+  overflow-wrap:anywhere;
+}
+.pp-card table th,
+.pp-card table td,
+.pp-card .pp-table th,
+.pp-card .pp-table td{
+  padding:5px 7px!important;
+}
