@@ -369,7 +369,7 @@ body{background:var(--exp-bg)!important;padding-top:64px!important}
  body{padding-top:0!important}
 }
 </style>
-<div class="chapter17-topbar"><div class="chapter17-brand">THE JOY OF ECONOMICS</div><nav><button class="chapter17-menu-toggle" type="button" aria-label="Open chapter navigation" aria-expanded="false"><span></span><span></span><span></span></button><a href="index.html">Textbook</a><a href="#pp-ready">Practice</a><a href="#etb-learnmore">Resources</a><button class="chapter17-right-toggle chapter17-resources-toggle" type="button" aria-label="Close right sidebar" aria-expanded="true"><span class="chapter17-right-icon"><i></i></span></button></nav></div>
+<div class="chapter17-topbar"><div class="chapter17-brand">THE JOY OF ECONOMICS</div><nav><button class="chapter17-menu-toggle" type="button" aria-label="Open chapter navigation" aria-expanded="false"><span></span><span></span><span></span></button><a href="index.html" data-ch17-view="textbook">Textbook</a><a href="#chapter17-practice-view" data-ch17-view="practice">Practice</a><a href="#chapter17-resources-view" data-ch17-view="resources">Resources</a><a href="#chapter17-focus-view" data-ch17-view="focus">Focus</a><button class="chapter17-right-toggle chapter17-resources-toggle" type="button" aria-label="Close right sidebar" aria-expanded="true"><span class="chapter17-right-icon"><i></i></span></button></nav></div>
 <aside class="chapter17-sidebar" aria-label="Chapter navigation"><h2>Chapter 17</h2><h3>Market Failures I:<br>Externalities</h3><p class="sidebar-label">In this chapter</p><ul><li><a href="#chapter17-concept-1" data-chapter-target="0">17.1 Externalities</a></li><li><a href="#chapter17-concept-2" data-chapter-target="1">17.2 Private and social cost</a></li><li><a href="#chapter17-concept-3" data-chapter-target="2">17.3 Negative externalities</a></li><li><a href="#chapter17-concept-4" data-chapter-target="3">17.4 Positive externalities</a></li><li><a href="#chapter17-concept-5" data-chapter-target="4">17.5 Measuring deadweight loss</a></li><li><a href="#pp-ready">Chapter practice</a></li></ul><p class="sidebar-label">More chapters</p><ul><li><a href="Chapter16.html">16. Consumer choice</a></li><li><a href="Chapter18.html">18. Shared resources</a></li></ul><hr class="sidebar-rule"><p class="sidebar-note">Navigation stays alongside the lesson so you can move through the chapter without losing your place.</p></aside>
 <aside class="chapter17-right-rail" aria-label="Alongside the lesson"><div class="chapter17-right-head"><h2>Alongside the lesson</h2></div><div class="chapter17-progress-slot"></div><div class="chapter17-rail-card"><h3>Watch · 3 min</h3><p>A short visual explanation of externalities and hidden third-party costs.</p><p style="margin-top:10px"><a href="#etb-learnmore">Open learning resources →</a></p></div><div class="chapter17-rail-card"><h3>Remember</h3><p>Private cost is not social cost. Social cost includes the effects on third parties.</p></div><div class="chapter17-rail-card"><h3>Everyday example</h3><p>If a factory pollutes a river, who bears the cost when the factory does not pay for the damage?</p></div></aside>
 <script>
@@ -568,5 +568,88 @@ body.chapter17-sidebar-open:not(.chapter17-right-rail-open) .etb{margin-left:cal
     padding-right:24px!important;
   }
 }
-</style></body>
+</style><style>
+/* Chapter 17 in-page views */
+.chapter17-topbar nav a.active{color:#267c78;font-weight:700}
+#chapter17-view-stage{display:none;max-width:1100px;margin:0 auto;padding:42px 30px 80px;font-family:Arial,Helvetica,sans-serif}
+body.ch17-view-practice #chapter17-view-stage,
+body.ch17-view-resources #chapter17-view-stage{display:block}
+body.ch17-view-practice .etb,
+body.ch17-view-resources .etb,
+body.ch17-view-practice .chapter17-sidebar,
+body.ch17-view-practice .chapter17-right-rail,
+body.ch17-view-resources .chapter17-sidebar,
+body.ch17-view-resources .chapter17-right-rail{display:none!important}
+body.ch17-view-practice .etb-overall-float,
+body.ch17-view-resources .etb-overall-float{display:none!important}
+body.ch17-view-focus .chapter17-sidebar,
+body.ch17-view-focus .chapter17-right-rail{display:none!important}
+body.ch17-view-focus .etb{max-width:1100px!important;width:min(1100px,calc(100vw - 48px))!important;margin:0 auto!important;padding-left:32px!important;padding-right:32px!important}
+body.ch17-view-focus .etb-overall-float{display:none!important}
+.chapter17-view-heading{font-family:Arial,Helvetica,sans-serif;color:#172b3d;font-size:34px;letter-spacing:-.02em;margin:0 0 8px}
+.chapter17-view-note{color:#6b7a83;font-size:15px;line-height:1.6;margin:0 0 28px}
+.chapter17-view-panel{background:#fff;border:1px solid #dce5e8;border-radius:10px;padding:22px;margin:0 0 18px;box-shadow:0 2px 9px rgba(30,55,67,.04)}
+.chapter17-view-panel>h2{font-family:Arial,Helvetica,sans-serif;color:#172b3d;font-size:20px;margin:0 0 14px}
+#chapter17-practice-view .pp-panel,#chapter17-practice-view .pp-ready,#chapter17-practice-view .etb-exam,#chapter17-practice-view .etb-retrieval,#chapter17-practice-view .etb-misc{display:block;margin:0 0 18px}
+#chapter17-resources-view .etb-worked,#chapter17-resources-view .etb-learnmore,#chapter17-resources-view .etb-note,#chapter17-resources-view .etb-rof,#chapter17-resources-view .etb-research{display:block;margin:0 0 18px}
+@media(max-width:820px){
+ #chapter17-view-stage{padding:28px 18px 60px}
+ body.ch17-view-focus .etb{width:100%!important;padding-left:20px!important;padding-right:20px!important}
+}
+</style>
+<div id="chapter17-view-stage" aria-live="polite">
+  <section id="chapter17-practice-view" class="chapter17-view-panel">
+    <h1 class="chapter17-view-heading">Chapter 17 Practice</h1>
+    <p class="chapter17-view-note">All of the practice activities from this chapter are collected here.</p>
+  </section>
+  <section id="chapter17-resources-view" class="chapter17-view-panel">
+    <h1 class="chapter17-view-heading">Chapter 17 Resources</h1>
+    <p class="chapter17-view-note">Formulas, videos, links, worked examples, notes, and related resources from this chapter.</p>
+  </section>
+</div>
+<script>
+(function(){
+  function setupChapterViews(){
+    var practiceView=document.getElementById("chapter17-practice-view");
+    var resourcesView=document.getElementById("chapter17-resources-view");
+    var practiceNodes=Array.prototype.slice.call(document.querySelectorAll(".pp-panel,.pp-ready,.etb-exam,.etb-retrieval,.etb-misc"));
+    var resourceNodes=Array.prototype.slice.call(document.querySelectorAll(".etb-worked,.etb-learnmore,.etb-note,.etb-rof,.etb-research")).filter(function(n){return !n.closest(".etb-exam,.pp-panel,.pp-ready")});
+    function createPlaceholders(nodes,kind){
+      nodes.forEach(function(node){
+        if(node.__chapter17Placeholder)return;
+        var marker=document.createComment("chapter17-"+kind);
+        node.parentNode.insertBefore(marker,node);
+        node.__chapter17Placeholder=marker;
+        node.setAttribute("data-ch17-"+kind,"");
+      });
+    }
+    createPlaceholders(practiceNodes,"practice");
+    createPlaceholders(resourceNodes,"resource");
+    function restore(nodes){
+      nodes.forEach(function(node){
+        var marker=node.__chapter17Placeholder;
+        if(marker&&marker.parentNode)marker.parentNode.insertBefore(node,marker.nextSibling);
+      });
+    }
+    function move(nodes,target){
+      nodes.forEach(function(node){target.appendChild(node)});
+    }
+    function setView(view){
+      restore(practiceNodes);restore(resourceNodes);
+      document.body.classList.remove("ch17-view-textbook","ch17-view-practice","ch17-view-resources","ch17-view-focus");
+      document.body.classList.add("ch17-view-"+view);
+      document.body.setAttribute("data-ch17-view",view);
+      if(view==="practice")move(practiceNodes,practiceView);
+      if(view==="resources")move(resourceNodes,resourcesView);
+      document.querySelectorAll("[data-ch17-view]").forEach(function(link){link.classList.toggle("active",link.getAttribute("data-ch17-view")===view)});
+      window.scrollTo(0,0);
+    }
+    document.querySelectorAll(".chapter17-topbar [data-ch17-view]").forEach(function(link){
+      link.addEventListener("click",function(e){e.preventDefault();setView(link.getAttribute("data-ch17-view"))});
+    });
+    setView("textbook");
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",setupChapterViews);else setupChapterViews();
+})();
+</script></body>
 </html>
