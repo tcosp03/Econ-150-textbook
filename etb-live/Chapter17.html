@@ -556,5 +556,17 @@ body.chapter17-sidebar-open:not(.chapter17-right-rail-open) .etb{margin-left:cal
 </style><style>
 /* Match the hamburger-to-Textbook spacing beside Resources. */
 .chapter17-resources-toggle{margin-left:0!important}
+</style><style>
+/* Use the full reading width when both sidebars are closed. */
+@media(min-width:821px){
+  body:not(.chapter17-sidebar-open):not(.chapter17-right-rail-open) .etb{
+    width:min(1400px,calc(100vw - 48px))!important;
+    max-width:none!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    padding-left:24px!important;
+    padding-right:24px!important;
+  }
+}
 </style></body>
 </html>
